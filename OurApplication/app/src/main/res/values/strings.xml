@@ -1,0 +1,53 @@
+<resources>
+
+    <string-array name="cities">
+        <item>Ahmadabad</item>
+        <item>Bangalore</item>
+        <item>Chennai</item>
+        <item>Cochin</item>
+        <item>Kolkata</item>
+        <item>Mumbai</item>
+        <item>Hyderabad</item>
+        <item>XXXXXXX</item>
+        <item>YYYYYYY</item>
+    </string-array>
+
+    <string name="app_name">OurApplication</string>
+    <string name="google_maps_key">AIzaSyBdBIr5R-D7gc3ryaSJ4pSPCj2-xdbPir0</string>
+    <string name="FCM_PREFERENCE">fcm_pref</string>
+    <string name="FCM_TOKEN">fcm_token</string>
+
+    <string name="msg_token_fmt" translatable="false">InstanceID Token: %s</string>
+
+    <string name="no_feed">No Feeds for you.</string>
+    <string name="send">Send</string>
+    <string name="msg_hint">Enter your message</string>
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+
+    <string name="number">Mobile Number</string>
+    <string name="username">Display Name</string>
+    <string name="password">Password</string>
+    <string name="login">Login</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="new_user_info">New user? create your account.</string>
+    <string name="login_progress">Logging In&#8230;</string>
+    <string name="sign_up_progress">Creating your account&#8230;</string>
+    <string name="login_failed">Unable to Login, please try again.</string>
+    <string name="sign_up_failed">Unable to create your account, please try again.</string>
+    <string name="drawer_open">Navigation drawer is opened</string>
+    <string name="drawer_close">Navigation drawer is closed</string>
+    <string name="groups">Groups</string>
+    <string name="action_settings">Settings</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="locate">Locate Me</string>
+    <string name="search">Search</string>
+    <string name="city">City</string>
+    <string name="location">Location</string>
+    <string name="enable">Enable</string>
+    <string name="cancel">Cancel</string>
+    <string name="gps_disabled">GPS Not enabled</string>
+    <string name="enable_gps">Do you want to enable it?</string>
+</resources>

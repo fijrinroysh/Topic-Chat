@@ -1,0 +1,80 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+
+    <EditText
+        android:id="@+id/msg_box"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Add a comment"
+        android:textStyle="italic"/>
+
+    <RelativeLayout
+        xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:id="@+id/compose_lyt"
+        android:layout_below="@id/msg_box"
+        android:layout_alignParentBottom="true"
+        >
+
+
+    <RelativeLayout
+        android:id="@+id/msg_send_lyt"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_msg_send_lyt"
+        android:layout_alignParentBottom="true"
+       >
+
+
+        <ImageButton
+            android:id="@+id/gallery"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/gallery"
+            android:background="@color/white"
+            android:paddingRight="10dp"
+            android:layout_alignParentLeft="true"
+            />
+
+        <ImageButton
+            android:id="@+id/camera_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@mipmap/camera"
+            android:layout_toRightOf="@+id/gallery"
+            android:background="@color/white"
+            />
+
+        <Button
+            android:id="@+id/send_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/send"
+            android:layout_alignParentRight="true"
+            android:background="@color/white"
+            />
+    </RelativeLayout>
+    </RelativeLayout>
+</RelativeLayout>
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

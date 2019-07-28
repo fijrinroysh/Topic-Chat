@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="FeedTheme" parent="AppTheme">
+        <!--<item name="android:title">@string/feed_title</item>-->
+    </style>
+    <style name="LoginTheme" parent="AppTheme">
+        <!--<item name="android:title">@string/login</item>-->
+    </style>
+</resources>
