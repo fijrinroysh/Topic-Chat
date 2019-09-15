@@ -15,6 +15,7 @@ public class ChatPostReqModel extends Model {
     private String mPostId;
     @JsonProperty(Keys.KEY_TOKEN)
     private String mToken;
+
     @JsonProperty(Keys.KEY_MESSAGE)
     private String mMessage;
     @JsonProperty(Keys.KEY_TIME)
@@ -35,6 +36,8 @@ public class ChatPostReqModel extends Model {
     public void setPostId(String postId) {
         this.mPostId = postId;
     }
+
+
 
     public String getToken() {
         return mToken;

@@ -178,8 +178,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         TextView senderMessage;
         ImageView senderPhoto;
         TextView messageTime;
-        ImageView subscribe;
-        ImageView unsubscribe;
+
 
         PersonViewHolder4(View itemView) {
             super(itemView);
@@ -187,9 +186,28 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             senderMessage = (TextView) itemView.findViewById(R.id.sender_message);
             senderPhoto = (ImageView) itemView.findViewById(R.id.sender_photo);
             messageTime = (TextView) itemView.findViewById(R.id.message_time);
-            subscribe = (ImageView) itemView.findViewById(R.id.subscribe);
-            unsubscribe = (ImageView) itemView.findViewById(R.id.unsubscribe);
+
            // token=((OurApplication) itemView.getContext()).getUserToken();
+        }
+    }
+
+
+    public class PersonViewHolder5 extends RecyclerView.ViewHolder {
+
+        TextView senderName;
+        TextView senderMessage;
+        ImageView senderPhoto;
+        TextView messageTime;
+
+
+        PersonViewHolder5(View itemView) {
+            super(itemView);
+            senderName = (TextView) itemView.findViewById(R.id.sender_name);
+            senderMessage = (TextView) itemView.findViewById(R.id.sender_message);
+            senderPhoto = (ImageView) itemView.findViewById(R.id.sender_photo);
+            messageTime = (TextView) itemView.findViewById(R.id.message_time);
+
+            // token=((OurApplication) itemView.getContext()).getUserToken();
         }
     }
 
@@ -212,8 +230,10 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return 3;
             }
             else {return 1;}
-        }else if (mFeeds.get(i).getType().equals("C"))
+        }else if (mFeeds.get(i).getType().equals("C") && mFeeds.get(i).getUserId().equals(userId)  )
         {
+            return 5;
+        }else if(mFeeds.get(i).getType().equals("C")){
             return 4;
         }
 
@@ -241,6 +261,11 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             Log.d(TAG, "PersonViewHolder4 created");
             View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_item_comment, viewGroup, false);
             return new PersonViewHolder4(v);
+        }
+        else if (viewType == 5) {
+            Log.d(TAG, "PersonViewHolder5 created");
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_item_comment2, viewGroup, false);
+            return new PersonViewHolder5(v);
         }
         else {return null;}
     }
@@ -606,6 +631,18 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 });*/
                 break;
 
+
+            case 5:
+                final PersonViewHolder5 vh5 = (PersonViewHolder5) viewHolder;
+                vh5.senderName.setText(item.getSenderName());
+                vh5.senderMessage.setText(item.getMessage());
+                token=OurApplication.getUserToken();
+                vh5.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
+
+                Picasso(item.getPhotoId(), vh5.senderPhoto);
+
+                break;
+
         }
     }
 
@@ -654,6 +691,9 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 .error(R.drawable.mickey)
                 .into(imageView);
     }
+
+
+
 
     void Picasso_thumbnail(String URL, ImageView imageView) {
         Picasso.with(mContext).load(URL)

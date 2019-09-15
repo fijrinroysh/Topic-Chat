@@ -120,10 +120,10 @@ public class FcmMessagingService extends FirebaseMessagingService  {
         Person person = new Person(
                 remoteMessage.getData().get("type"),
                 remoteMessage.getData().get("postid"),
-                "9894231831",
-                "Fijrin",
+                remoteMessage.getData().get("userid"),
+                remoteMessage.getData().get("name"),
                 remoteMessage.getData().get("message"),
-                "urltobeaddedinserver",
+                remoteMessage.getData().get("profileimage"),
                 "",
                 remoteMessage.getData().get("time"),
                 ""
@@ -171,6 +171,8 @@ public class FcmMessagingService extends FirebaseMessagingService  {
         NotificationManagerCompat manager = NotificationManagerCompat.from(getApplicationContext());
         manager.notify(/*notification id*/0, notification);
     }
+
+
     private void Notifychats(final Person person) {
 
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -179,12 +181,7 @@ public class FcmMessagingService extends FirebaseMessagingService  {
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-        try {
-            // Perform the operation associated with our pendingIntent
-            pendingIntent.send();
-        } catch (PendingIntent.CanceledException e) {
-            e.printStackTrace();
-        }
+
         //Bitmap bitmap = Helper.getBitmapFromURL(notificationIcon);
 
 

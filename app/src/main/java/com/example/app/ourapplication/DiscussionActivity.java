@@ -34,6 +34,7 @@ import com.example.app.ourapplication.rest.model.request.HomeFeedReqModel;
 import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
+import com.example.app.ourapplication.ui.HomeActivity;
 import com.example.app.ourapplication.util.Helper;
 import com.example.app.ourapplication.util.UI;
 import com.example.app.ourapplication.wss.WebSocketListener;
@@ -104,7 +105,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
     private String keyid;
     // private String token;
     private DBHelper mDBHelper = new DBHelper(this);
-    private SwipeRefreshLayout mSwipeRefreshLayout;
+    //private SwipeRefreshLayout mSwipeRefreshLayout;
     private RecyclerView recyclerView;
     private static View view;
     private  String token;
@@ -115,12 +116,12 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         setContentView(R.layout.discussion);
         LayoutInflater inflater=getLayoutInflater();
         view=(View) inflater.inflate(R.layout.discussion,null);
-        token = ((OurApplication) getApplicationContext()).getUserToken();
-        ImageView mSendButton = (ImageView) findViewById(R.id.send_button);
+        //token = ((OurApplication) getApplicationContext()).getUserToken();
+        Button mSendButton = (Button) findViewById(R.id.send_button);
         final EditText mMessageBox = (EditText) findViewById(R.id.msg_box);
         //mWebSocketClient = ((OurApplication)getApplicationContext()).getClient();
         //mWebSocketClient.addWebSocketListener(this);
-        //token = ((OurApplication)getApplicationContext()).getUserToken();
+        token = ((OurApplication)getApplicationContext()).getUserToken();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
@@ -166,23 +167,13 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
             }
         });
 
-        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
-       /* mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
 
-             //This method is called when swipe refresh is pulled down
 
-            @Override
-            public void onRefresh() {
-                // Refresh items
-                getUpdatedComments();
-            }
-
-        });*/
 
         /*
          * Showing Swipe Refresh animation on activity create
          * As animation won't start on onCreate, post runnable is used
-         */
+         mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
@@ -190,7 +181,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                 getUpdatedComments();
             }
         });
-
+*/
 
 
             // Register to receive messages.
@@ -296,7 +287,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                 Toast.makeText(getApplicationContext(), "Loading Comments Failed", Toast.LENGTH_LONG).show();
             }
         });
-        mSwipeRefreshLayout.setRefreshing(false);
+       // mSwipeRefreshLayout.setRefreshing(false);
     }
 
 
@@ -382,10 +373,15 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                 }
             });
 
+
         }
 
 
+   /* public void onBackPressed() {
 
+        final Intent homeIntent = new Intent(getApplicationContext(), HomeActivity.class);
+        getApplicationContext().startActivity(homeIntent);
+    }*/
 
 
 }
