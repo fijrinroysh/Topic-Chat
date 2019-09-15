@@ -202,53 +202,7 @@ public class HomeFeedFragment extends Fragment {
         });
     }*/
 
-    private void notify(Person person) {
 
-        final NotificationManager notificationManager = (NotificationManager) getActivity().getSystemService
-                (Context.NOTIFICATION_SERVICE);
-        Intent notificationIntent = new Intent(getContext(), DiscussionActivity.class);
-        notificationIntent.putExtra("person", person);
-        notificationIntent.setAction(Intent.ACTION_MAIN);
-        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(getContext(), 0, notificationIntent, 0);
-
-        //Bitmap bitmap = Helper.getBitmapFromURL(notificationIcon);
-
-
-        final Notification.Builder mBuilder = new Notification.Builder(getContext())
-                .setAutoCancel(true)
-                .setContentTitle(person.getSenderName())
-                .setContentText(person.getMessage())
-                .setSmallIcon(R.mipmap.app_icon)
-
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                .setStyle(new Notification.BigTextStyle()
-                        .bigText(person.getMessage()))
-                // .setSmallIcon(setImageBitmap(Helper.decodeImageString(notificationIcon)))
-                .setContentIntent(pendingIntent);
-        // hide the notification after its selected
-        // notification.flags |= Notification.FLAG_AUTO_CANCEL;
-        Picasso.with(getContext())
-                .load(person.getPhotoId())
-                .placeholder(R.drawable.mickey)
-                .error(R.drawable.mickey)
-                .into(new Target() {
-                    @Override
-                    public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                        mBuilder.setLargeIcon(bitmap);
-                        notificationManager.notify(0, mBuilder.build());
-                    }
-
-                    @Override
-                    public void onBitmapFailed(Drawable errorDrawable) {
-                        notificationManager.notify(0, mBuilder.build());
-                    }
-
-                    @Override
-                    public void onPrepareLoad(Drawable placeHolderDrawable) {
-                    }
-                });
-    }
 
 
 
@@ -270,7 +224,7 @@ public class HomeFeedFragment extends Fragment {
                     ArrayList<Person> data = response.body().getData();
                     if (data.size() > 0) {
                         for (int i = 0; i < data.size(); i++) {
-                            mDBHelper.insertFeedData(data.get(i), "HTTP");
+                            mDBHelper.insertFeedData(data.get(i));
                             Log.d(TAG, "insertFeedData :" + data.get(i));
                             mFeeds.add(0, data.get(i));
                             mFeedListAdapter.notifyItemInserted(0);

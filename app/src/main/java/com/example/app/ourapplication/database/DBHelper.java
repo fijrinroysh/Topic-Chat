@@ -39,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private SQLiteDatabase mydatabase;
 
     public DBHelper(Context context) {
-        super(context, "FEED", null, 32); //24 is the database version
+        super(context, "FEED", null, 34); //24 is the database version
     }
 
     @Override
@@ -53,8 +53,7 @@ public class DBHelper extends SQLiteOpenHelper {
                         PROFILE_IMAGE_COLUMN +" VARCHAR,"+
                         MESSAGE_IMAGE_COLUMN+" VARCHAR,"+
                         MESSAGE_TIME_COLUMN+" VARCHAR,"+
-                        SUBSCRIPTION_FLAG_COLUMN+" VARCHAR,"+
-                        MESSAGE_PROTOCOL_COLUMN+" VARCHAR)"
+                        SUBSCRIPTION_FLAG_COLUMN+" VARCHAR)"
 
         );
 
@@ -64,7 +63,9 @@ public class DBHelper extends SQLiteOpenHelper {
                         MESSAGE_USER_NAME_COLUMN+" VARCHAR,"+
                         MESSAGE_COLUMN+" VARCHAR,"+
                         PROFILE_IMAGE_COLUMN +" VARCHAR,"+
-                        MESSAGE_TIME_COLUMN+" VARCHAR)"
+                        MESSAGE_IMAGE_COLUMN+" VARCHAR,"+
+                        MESSAGE_TIME_COLUMN+" VARCHAR,"+
+                        SUBSCRIPTION_FLAG_COLUMN+" VARCHAR)"
 
         );
 
@@ -116,7 +117,7 @@ public class DBHelper extends SQLiteOpenHelper {
         while(msg_res.isAfterLast() == false){
             String column0 = msg_res.getString(0);
             String column1 = msg_res.getString(1);
-            String column2 = msg_res.getString(2);  
+            String column2 = msg_res.getString(2);
             String column3 = msg_res.getString(3);
             String column4 = msg_res.getString(4);
             String column5 = msg_res.getString(5);
@@ -214,8 +215,10 @@ public class DBHelper extends SQLiteOpenHelper {
         ArrayList<Person> array_list = new ArrayList<Person>();
 
         SQLiteDatabase db = this.getReadableDatabase();
-        Cursor msg_res =  db.rawQuery( "select * from COMMENT_DATA where " +MESSAGE_ID_COLUMN+ " = \"" + id +"\" ORDER BY "+ MESSAGE_TIME_COLUMN+" ASC", null );
-        //Cursor res =  db.rawQuery( "select * from MESSAGE_DATA" , null );
+        //Cursor msg_res =  db.rawQuery( "select * from MESSAGE_DATA where " +MESSAGE_FROM_COLUMN+ " = \"" + id + "\" or " +MESSAGE_TO_COLUMN_NAME+ " = \""+id+"\" ORDER BY "+ MESSAGE_TIME_COLUMN_NAME+" DESC", null );
+        //Cursor msg_res =  db.rawQuery("select * from MESSAGE_DATA where " + MESSAGE_PROTOCOL_COLUMN + " = \"HTTP\" ORDER BY " + MESSAGE_TIME_COLUMN + " DESC", null);
+
+        Cursor msg_res =  db.rawQuery("select * from COMMENT_DATA  WHERE " + MESSAGE_ID_COLUMN + " = \"" + id + "\" ORDER BY " + MESSAGE_TIME_COLUMN + " ASC", null);
         msg_res.moveToFirst();
 
         while(msg_res.isAfterLast() == false){
@@ -225,8 +228,10 @@ public class DBHelper extends SQLiteOpenHelper {
             String column3 = msg_res.getString(3);
             String column4 = msg_res.getString(4);
             String column5 = msg_res.getString(5);
+            String column6 = msg_res.getString(6);
+            String column7 = msg_res.getString(7);
 
-            array_list.add(new Person("C",column0, column1 , column2 ,column3,column4, "", column5,"" ));
+            array_list.add(new Person("C",column0, column1 , column2 , column3, column4,column5,column6,column7 ));
             msg_res.moveToNext();
         }
         return array_list;
@@ -258,7 +263,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
 
 
-    public boolean insertFeedData (Person  message , String protocol) {
+    public boolean insertFeedData (Person  message ) {
        /* JSONObject msgObject = null;
         try {
             msgObject = new JSONObject(message);
@@ -276,7 +281,7 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(MESSAGE_IMAGE_COLUMN, message.getPhotoMsg());
         contentValues.put(MESSAGE_TIME_COLUMN, message.getTimeMsg());
         contentValues.put(SUBSCRIPTION_FLAG_COLUMN, message.getSubscriptionFlag());
-        contentValues.put(MESSAGE_PROTOCOL_COLUMN, protocol);
+
         mydatabase.insert("MESSAGE_DATA", null, contentValues);
         return true;
     }
@@ -295,11 +300,13 @@ public class DBHelper extends SQLiteOpenHelper {
         contentValues.put(MESSAGE_USER_NAME_COLUMN, message.getSenderName());
         contentValues.put(MESSAGE_COLUMN, message.getMessage());
         contentValues.put(PROFILE_IMAGE_COLUMN, message.getPhotoId());
-        //contentValues.put(MESSAGE_IMAGE_COLUMN_NAME, msgObject.optString(Keys.KEY_IMAGE));
-        //contentValues.put(MESSAGE_LIKES_COLUMN_NAME, msgObject.optString(Keys.KEY_LIKES));
+        contentValues.put(MESSAGE_IMAGE_COLUMN, message.getPhotoMsg());
         contentValues.put(MESSAGE_TIME_COLUMN, message.getTimeMsg());
+        contentValues.put(SUBSCRIPTION_FLAG_COLUMN, message.getSubscriptionFlag());
         mydatabase.insert("COMMENT_DATA", null, contentValues);
+        Log.d(TAG, "insertCommentData: " + message.getMessage());
         return true;
+
     }
 
     public String getFeedDataLatestTime() {

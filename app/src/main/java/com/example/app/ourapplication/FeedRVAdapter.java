@@ -686,7 +686,6 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
             @Override
             public void onClick(View v) {
                 final Intent discussionIntent = new Intent(v.getContext(), DiscussionActivity.class);
-                discussionIntent.putExtra(Keys.KEY_ID, person.getPostId());
                 discussionIntent.putExtra("person", person);
                 v.getContext().startActivity(discussionIntent);
             }

@@ -1,5 +1,6 @@
 package com.example.app.ourapplication;
 
+import android.app.Notification;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -7,9 +8,11 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
+import android.support.v4.app.NotificationManagerCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.app.NotificationCompat;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.text.TextUtils;
@@ -105,6 +108,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
     private RecyclerView recyclerView;
     private static View view;
     private  String token;
+    Boolean myReceiverIsRegistered = false;
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,13 +131,13 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         if (keyid != null) {
 
             mComments.clear();
-
-            //  mComments.addAll(mDBHelper.getCommentData(keyid));
-
-            mComments.add(0, person);
+            //mComments.add(0, person);
+            mComments.add(0, mDBHelper.getFeedData(keyid));
+            mComments.addAll(mDBHelper.getCommentData(keyid));
+            recyclerView.scrollToPosition(mComments.size() - 1);
             mCommentListAdapter = new FeedRVAdapter(DiscussionActivity.this,mComments);
             recyclerView.setAdapter(mCommentListAdapter);
-            Log.d(TAG, "This will be used to enable Type message layout:" + person.getSubscriptionFlag());
+            Log.d(TAG, "Get comment messages from database:" + mDBHelper.getCommentData(keyid));
             //PostSubscription(view,keyid, mComments.get(0).getUserId(),"Y");
             // Helper.PostSubscription(view,token, keyid, "Y");
 
@@ -188,11 +192,14 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         });
 
 
-        // Register to receive messages.
-        // We are registering an observer (mMessageReceiver) to receive Intents
-        // with actions named "custom-event-name".
-        LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
-                new IntentFilter("chatevent"));
+
+            // Register to receive messages.
+            // We are registering an observer (mMessageReceiver) to receive Intents
+            // with actions named "custom-event-name".
+            LocalBroadcastManager.getInstance(this).registerReceiver(mMessageReceiver,
+                    new IntentFilter("chatevent"));
+
+
 
     }
 
@@ -243,7 +250,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
     @Override
     protected void onDestroy() {
         // Unregister since the activity is about to be closed.
-        //LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
+        LocalBroadcastManager.getInstance(this).unregisterReceiver(mMessageReceiver);
         super.onDestroy();
         //mWebSocketClient.sendMessage(Helper.formSubscribeMessage("U", keyid, token));
         //mWebSocketClient.removeWebSocketListener(this);
@@ -253,8 +260,8 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
 
     private void getUpdatedComments(){
         CommentFeedReqModel reqModel = new CommentFeedReqModel();
-        reqModel.setLatestDate("2000-12-31 12:00:00");
-        // reqModel.setLatestDate(mDBHelper.getCommentDataLatestTime(keyid));
+        //reqModel.setLatestDate("2000-12-31 12:00:00");
+        reqModel.setLatestDate(mDBHelper.getCommentDataLatestTime(keyid));
         reqModel.setPostId(keyid);
         reqModel.setType("C");
         Call<SuccessRespModel> queryComments = ((OurApplication)getApplicationContext())
@@ -292,85 +299,91 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+
+
+
     // Our handler for received Intents. This will be called whenever an Intent
 // with an action named "chatdata" is broadcasted.
     private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
             // Get extra data included in the Intent
-           // String message = intent.getStringExtra("chatdata");
+            // String message = intent.getStringExtra("chatdata");
             //Log.d(TAG, "Got message: " + message);
 
                 /*Got message: {postid=201907282340009486946972, userid=, subscriptionflag=, name=, time=2000-12-31 12:00:00, type=C, image=, message=Ffw, profileimage=}*/
-           Person person = new Person(
-                   intent.getStringExtra("type"),
-                    intent.getStringExtra("postid"),
-                    "9894231831",
-                    "Fijrin",
-                   intent.getStringExtra("message"),
-                    "photourl",
-                    "",
-                   intent.getStringExtra("time"),
-                    ""
-            );
-                mComments.add(person);
 
-                mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
-                recyclerView.scrollToPosition(mComments.size() - 1);
+            Person person = (Person) intent.getSerializableExtra("person");
+
+
+
+            if (person.getType().equals("C")) {
+                Log.d(TAG, "I am message type C:");
+                Log.d(TAG, person.getPostId());
+
+                if (person.getPostId().equals(keyid)) {
+                    //Add to Comment array if it belongs to same post id and notify dataset changed
+                    mComments.add(person);
+                    mCommentListAdapter.notifyDataSetChanged();
+                    recyclerView.scrollToPosition(mComments.size() - 1);
+
+
+                }
+            }
+
             }
 
 
-
-    };
-
-
-    private void postchat(String id , String token, String message){
-
-        ChatPostReqModel reqModel = new ChatPostReqModel();
-        reqModel.setTime(Helper.getCurrentTimeStamp());
-        reqModel.setPostId(id);
-        reqModel.setMessage(message);
-        reqModel.setType("C");
-        reqModel.setToken(token);
+        };
 
 
+        private void postchat(String id, String token, String message) {
 
-        //msg = Helper.formCommentMessage("C", keyid, token, message);
+            ChatPostReqModel reqModel = new ChatPostReqModel();
+            reqModel.setTime(Helper.getCurrentTimeStamp());
+            reqModel.setPostId(id);
+            reqModel.setMessage(message);
+            reqModel.setType("C");
+            reqModel.setToken(token);
+
+
+            //msg = Helper.formCommentMessage("C", keyid, token, message);
 
         /*Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());*/
 
-        Call<ComposeRespModel> composeChat = ((OurApplication) getApplicationContext())
-                .getRestApi().ComposeChat(reqModel);
-        composeChat.enqueue(new Callback<ComposeRespModel>() {
-            @Override
-            public void onResponse(Call<ComposeRespModel> call, Response<ComposeRespModel> response) {
-                if (response.body() != null) {
-                    //do something
+            Call<ComposeRespModel> composeChat = ((OurApplication) getApplicationContext())
+                    .getRestApi().ComposeChat(reqModel);
+            composeChat.enqueue(new Callback<ComposeRespModel>() {
+                @Override
+                public void onResponse(Call<ComposeRespModel> call, Response<ComposeRespModel> response) {
+                    if (response.body() != null) {
+                        //do something
 
-                    Boolean data = response.body().isSuccess();
-                    if (data) {
+                        Boolean data = response.body().isSuccess();
+                        if (!data) {
 
-                        // Log.d(TAG, "insertFeedData :" + data.get(i));
-                        Toast.makeText(getApplicationContext(), "Chat Posted Successfully", Toast.LENGTH_LONG).show();
+                            // Log.d(TAG, "insertFeedData :" + data.get(i));
+                            Toast.makeText(getApplicationContext(), "Chat Posted Successfully", Toast.LENGTH_LONG).show();
 
 
+                        } else {
+                            Toast.makeText(getApplicationContext(), "Post chat response code is not true", Toast.LENGTH_LONG).show();
+                        }
                     } else {
-                        Toast.makeText(getApplicationContext(), "Unable to Post Chat", Toast.LENGTH_LONG).show();
+                        Toast.makeText(getApplicationContext(), "Post chat response body is null", Toast.LENGTH_LONG).show();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), "Unable to Post Chat", Toast.LENGTH_LONG).show();
+
                 }
 
-            }
+                @Override
+                public void onFailure(Call<ComposeRespModel> call, Throwable t) {
+                    Log.d(TAG, "Posting Chat Failed: " + t);
+                    Toast.makeText(getApplicationContext(), "Posting Chat Failed" + t, Toast.LENGTH_LONG).show();
+                }
+            });
 
-            @Override
-            public void onFailure(Call<ComposeRespModel> call, Throwable t) {
-                Log.d(TAG, "Posting Chat Failed: " + t);
-                Toast.makeText(getApplicationContext(), "Posting Chat Failed", Toast.LENGTH_LONG).show();
-            }
-        });
+        }
 
-    }
 
 
 
