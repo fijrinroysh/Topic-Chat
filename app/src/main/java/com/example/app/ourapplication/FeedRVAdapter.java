@@ -221,11 +221,11 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
     @Override
     public int getItemViewType(int i) {
         if (mFeeds.get(i).getType().equals("F")){
-            if(mFeeds.get(i).getPhotoMsg() != null && !mFeeds.get(i).getPhotoMsg().isEmpty() && mFeeds.get(i).getPhotoMsg().contains("/file_download/Pictures/"))
+            if(mFeeds.get(i).getPhotoMsg() != null && !mFeeds.get(i).getPhotoMsg().isEmpty() && mFeeds.get(i).getPhotoMsg().contains("/images/"))
             {
                 return 2;
             }
-            else if(mFeeds.get(i).getPhotoMsg() != null && !mFeeds.get(i).getPhotoMsg().isEmpty() && mFeeds.get(i).getPhotoMsg().contains("/file_download/Videos/"))
+            else if(mFeeds.get(i).getPhotoMsg() != null && !mFeeds.get(i).getPhotoMsg().isEmpty() && mFeeds.get(i).getPhotoMsg().contains("/videos/"))
             {
                 return 3;
             }
@@ -259,7 +259,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         }
         else if (viewType == 4) {
             Log.d(TAG, "PersonViewHolder4 created");
-            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_item_comment, viewGroup, false);
+            View v = LayoutInflater.from(viewGroup.getContext()).inflate(R.layout.card_item_comment1, viewGroup, false);
             return new PersonViewHolder4(v);
         }
         else if (viewType == 5) {
@@ -426,8 +426,8 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 String Thumbnail_URL = item.getPhotoMsg().substring(0, index);
                  String Thumbnail_filename = item.getPhotoMsg().substring(index + 1);
                 Log.d(TAG, "Thumbnail_URL" + Thumbnail_URL);
-                Log.d(TAG, "Thumbnail_filename" + Thumbnail_filename.substring(0, Thumbnail_filename.indexOf('.')) + ".jpg");
-                String thumbnailfilename = Thumbnail_URL.concat("/video_thumbnail_").concat(Thumbnail_filename.substring(0, Thumbnail_filename.indexOf('.')) + ".jpg");
+                Log.d(TAG, "Thumbnail_filename : " + Thumbnail_filename.substring(0, Thumbnail_filename.indexOf('.')) + ".jpg");
+                String thumbnailfilename = Thumbnail_URL.concat("/"+Thumbnail_filename.substring(0, Thumbnail_filename.indexOf('.')) + ".jpg");
                 Log.d(TAG, "Video Thumbnail file name :" + thumbnailfilename);
                 Picasso(thumbnailfilename, vh3.videoThumbnail);
                 vh3.playIcon.setVisibility(View.VISIBLE);

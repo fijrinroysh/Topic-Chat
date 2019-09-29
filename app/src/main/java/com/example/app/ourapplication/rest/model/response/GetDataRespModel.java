@@ -4,28 +4,30 @@ import com.example.app.ourapplication.rest.model.Model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 /**
- * Created by sarumugam on 15/01/17.
+ * Created by ROYSH on 2/21/2017.
  */
-
-public class SuccessRespModel extends Model implements Serializable {
-
+public class GetDataRespModel extends Model  {
 
     private boolean mIsSuccess;
+    private ArrayList<Person> mData;
 
     @JsonCreator
-    public SuccessRespModel(@JsonProperty("success") Boolean success) {
+    public GetDataRespModel(@JsonProperty("success") Boolean success, @JsonProperty("data") ArrayList<Person> data) {
         this.mIsSuccess = success;
+        this.mData = data;
+
     }
 
     public boolean isSuccess() {
         return mIsSuccess;
     }
 
-    public void setIsSuccess(boolean isSuccess) {
-        this.mIsSuccess = isSuccess;
+    public ArrayList<Person> getData() {
+        return mData;
     }
+
+
 }

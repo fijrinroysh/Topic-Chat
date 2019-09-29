@@ -32,6 +32,7 @@ import com.example.app.ourapplication.rest.model.request.ChatPostReqModel;
 import com.example.app.ourapplication.rest.model.request.CommentFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.HomeFeedReqModel;
 import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
+import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
 import com.example.app.ourapplication.ui.HomeActivity;
@@ -109,7 +110,8 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
     private RecyclerView recyclerView;
     private static View view;
     private  String token;
-    Boolean myReceiverIsRegistered = false;
+
+    FcmTokenService mFcmTokenService = new FcmTokenService(this);
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -121,7 +123,9 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         final EditText mMessageBox = (EditText) findViewById(R.id.msg_box);
         //mWebSocketClient = ((OurApplication)getApplicationContext()).getClient();
         //mWebSocketClient.addWebSocketListener(this);
-        token = ((OurApplication)getApplicationContext()).getUserToken();
+        //token = ((OurApplication)getApplicationContext()).getUserToken();
+
+        token=mFcmTokenService.getGCMToken();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
@@ -255,11 +259,11 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         reqModel.setLatestDate(mDBHelper.getCommentDataLatestTime(keyid));
         reqModel.setPostId(keyid);
         reqModel.setType("C");
-        Call<SuccessRespModel> queryComments = ((OurApplication)getApplicationContext())
+        Call<GetDataRespModel> queryComments = ((OurApplication)getApplicationContext())
                 .getRestApi().queryCommentFeed(reqModel);
-        queryComments.enqueue(new Callback<SuccessRespModel>() {
+        queryComments.enqueue(new Callback<GetDataRespModel>() {
             @Override
-            public void onResponse(Call<SuccessRespModel> call, Response<SuccessRespModel> response) {
+            public void onResponse(Call<GetDataRespModel> call, Response<GetDataRespModel> response) {
                 if (response.body() != null) {
                     //do something
                 ArrayList<Person> data = response.body().getData();
@@ -282,7 +286,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
             }
 
             @Override
-            public void onFailure(Call<SuccessRespModel> call, Throwable t) {
+            public void onFailure(Call<GetDataRespModel> call, Throwable t) {
                 Log.d(TAG, "Query failed");
                 Toast.makeText(getApplicationContext(), "Loading Comments Failed", Toast.LENGTH_LONG).show();
             }
@@ -342,18 +346,17 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
 
         /*Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());*/
 
-            Call<ComposeRespModel> composeChat = ((OurApplication) getApplicationContext())
+            Call<SuccessRespModel> composeChat = ((OurApplication) getApplicationContext())
                     .getRestApi().ComposeChat(reqModel);
-            composeChat.enqueue(new Callback<ComposeRespModel>() {
+            composeChat.enqueue(new Callback<SuccessRespModel>() {
                 @Override
-                public void onResponse(Call<ComposeRespModel> call, Response<ComposeRespModel> response) {
+                public void onResponse(Call<SuccessRespModel> call, Response<SuccessRespModel> response) {
+                    Log.d(TAG, "Response body for post chat :" + response.body());
                     if (response.body() != null) {
                         //do something
+                        if (response.body().isSuccess()) {
 
-                        Boolean data = response.body().isSuccess();
-                        if (!data) {
-
-                            // Log.d(TAG, "insertFeedData :" + data.get(i));
+                             Log.d(TAG, "Response body for post chat :" + response.body());
                             Toast.makeText(getApplicationContext(), "Chat Posted Successfully", Toast.LENGTH_LONG).show();
 
 
@@ -367,7 +370,7 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                 }
 
                 @Override
-                public void onFailure(Call<ComposeRespModel> call, Throwable t) {
+                public void onFailure(Call<SuccessRespModel> call, Throwable t) {
                     Log.d(TAG, "Posting Chat Failed: " + t);
                     Toast.makeText(getApplicationContext(), "Posting Chat Failed" + t, Toast.LENGTH_LONG).show();
                 }

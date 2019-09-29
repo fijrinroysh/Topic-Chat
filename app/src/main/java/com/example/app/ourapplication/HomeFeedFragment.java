@@ -29,6 +29,8 @@ import com.example.app.ourapplication.database.DBHelper;
 import com.example.app.ourapplication.pref.PreferenceEditor;
 import com.example.app.ourapplication.rest.model.request.HomeFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.LocationModel;
+import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
+import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -213,11 +215,11 @@ public class HomeFeedFragment extends Fragment {
 
         //Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());
 
-        Call<SuccessRespModel> queryHomeFeeds = ((OurApplication)getActivity().getApplicationContext())
+        Call<GetDataRespModel> queryHomeFeeds = ((OurApplication)getActivity().getApplicationContext())
                 .getRestApi().queryHomeFeed(reqModel);
-        queryHomeFeeds.enqueue(new Callback<SuccessRespModel>() {
+        queryHomeFeeds.enqueue(new Callback<GetDataRespModel>() {
             @Override
-            public void onResponse(Call<SuccessRespModel> call, Response<SuccessRespModel> response) {
+            public void onResponse(Call<GetDataRespModel> call, Response<GetDataRespModel> response) {
                 if (response.body() != null) {
                     //do something
 
@@ -240,7 +242,7 @@ public class HomeFeedFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<SuccessRespModel> call, Throwable t) {
+            public void onFailure(Call<GetDataRespModel> call, Throwable t) {
                 Log.d(TAG, "Query failed: " + t);
                 Toast.makeText(getActivity(), "Loading feeds failed", Toast.LENGTH_LONG).show();
             }

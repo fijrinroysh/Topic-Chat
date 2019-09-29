@@ -33,8 +33,10 @@ import com.example.app.ourapplication.rest.api.FileUploadApi;
 import com.example.app.ourapplication.rest.model.request.ProfileFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.ProfileUpdateModel;
 import com.example.app.ourapplication.rest.model.response.CompleteFeedModel;
+import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.ProfileRespModel;
+import com.example.app.ourapplication.rest.model.response.SubscriberDataRespModel;
 import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
 import com.example.app.ourapplication.util.Helper;
 import com.example.app.ourapplication.util.UI;
@@ -296,11 +298,11 @@ public class ProfileFragment extends Fragment {
     }
 
     private void updateProfile(ProfileUpdateModel reqModel){
-        Call<ProfileRespModel> profileUpdater = ((OurApplication)getActivity().getApplicationContext()).getRestApi().
+        Call<SubscriberDataRespModel> profileUpdater = ((OurApplication)getActivity().getApplicationContext()).getRestApi().
                 updateProfile(reqModel);
-        profileUpdater.enqueue(new Callback<ProfileRespModel>() {
+        profileUpdater.enqueue(new Callback<SubscriberDataRespModel>() {
             @Override
-            public void onResponse(Call<ProfileRespModel> call, Response<ProfileRespModel> response) {
+            public void onResponse(Call<SubscriberDataRespModel> call, Response<SubscriberDataRespModel> response) {
                 if (response.body().isSuccess()) {
                     Log.d(TAG, response.body() + "Profile information Updated");
                     Snackbar.make(profileImgView, "Profile information Updated", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -311,7 +313,7 @@ public class ProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<ProfileRespModel> call,Throwable t) {
+            public void onFailure(Call<SubscriberDataRespModel> call,Throwable t) {
                 t.printStackTrace();
                 Snackbar.make(profileImgView, "Profile information not Updated", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 Log.d(TAG, "Profile information not Updated");
@@ -323,11 +325,11 @@ public class ProfileFragment extends Fragment {
     private void getUpdatedFeeds(){
         ProfileFeedReqModel reqModel = new ProfileFeedReqModel(mUserId,"2020-12-31 12:00:00");
 
-        Call<SuccessRespModel> queryProfileFeeds = ((OurApplication)getActivity().getApplicationContext())
+        Call<GetDataRespModel> queryProfileFeeds = ((OurApplication)getActivity().getApplicationContext())
                 .getRestApi().queryProfileFeed(reqModel);
-        queryProfileFeeds.enqueue(new Callback<SuccessRespModel>() {
+        queryProfileFeeds.enqueue(new Callback<GetDataRespModel>() {
             @Override
-            public void onResponse(Call<SuccessRespModel> call,Response<SuccessRespModel> response) {
+            public void onResponse(Call<GetDataRespModel> call,Response<GetDataRespModel> response) {
                 if (response.body().isSuccess()) {
                     ArrayList<Person> data = response.body().getData();
 
@@ -344,7 +346,7 @@ public class ProfileFragment extends Fragment {
             }
 
             @Override
-            public void onFailure(Call<SuccessRespModel> call,Throwable t) {
+            public void onFailure(Call<GetDataRespModel> call,Throwable t) {
                 Log.d(TAG, "Query failed for the reason: " + t);
                 Toast.makeText(getActivity(), "Loading Feeds Failed", Toast.LENGTH_LONG).show();
             }

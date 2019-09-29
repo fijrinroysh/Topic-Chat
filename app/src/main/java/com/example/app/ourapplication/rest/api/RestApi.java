@@ -5,8 +5,10 @@ import com.example.app.ourapplication.rest.model.request.HomeFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.ProfileFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.ProfileUpdateModel;
 import com.example.app.ourapplication.rest.model.request.SignInReqModel;
+import com.example.app.ourapplication.rest.model.request.TokenReqModel;
 import com.example.app.ourapplication.rest.model.response.CompleteFeedModel;
 import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
+import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
 import com.example.app.ourapplication.rest.model.response.ProfileRespModel;
 import com.example.app.ourapplication.rest.model.response.SignInRespModel;
 import com.example.app.ourapplication.rest.model.request.SignUpReqModel;
@@ -31,22 +33,25 @@ public interface RestApi {
     Call<Void> signUp(@Body SignUpReqModel signUpReqModel);
 
     @POST("/updateprofile")
-    Call<ProfileRespModel> updateProfile(@Body ProfileUpdateModel profileReqModel);
+    Call<SubscriberDataRespModel> updateProfile(@Body ProfileUpdateModel profileReqModel);
 
     @POST("/feedquery/home")
-    Call<SuccessRespModel> queryHomeFeed(@Body HomeFeedReqModel homeFeedReqModel);
+    Call<GetDataRespModel> queryHomeFeed(@Body HomeFeedReqModel homeFeedReqModel);
 
     @POST("/feedquery/profile")
-    Call<SuccessRespModel> queryProfileFeed(@Body ProfileFeedReqModel profileFeedReqModel);
+    Call<GetDataRespModel> queryProfileFeed(@Body ProfileFeedReqModel profileFeedReqModel);
 
     @POST("/feedquery/comment")
-    Call<SuccessRespModel> queryCommentFeed(@Body CommentFeedReqModel commentFeedReqModel);
+    Call<GetDataRespModel> queryCommentFeed(@Body CommentFeedReqModel commentFeedReqModel);
 
     @POST("/postfeed")
     Call<ComposeRespModel> ComposeFeed(@Body CompleteFeedModel completeFeedModel);
 
+    @POST("/updatetoken")
+    Call<SuccessRespModel> UpdateToken(@Body TokenReqModel tokenReqModel);
+
     @POST("/postchat")
-    Call<ComposeRespModel> ComposeChat(@Body ChatPostReqModel chatPostReqModel);
+    Call<SuccessRespModel> ComposeChat(@Body ChatPostReqModel chatPostReqModel);
 
     @POST("/subscriber/subscribe")
     Call<SuccessRespModel> SubscribeFeed(@Body SubscribeReqModel subscribereqmodel);

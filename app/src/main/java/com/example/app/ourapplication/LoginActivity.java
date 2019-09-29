@@ -18,7 +18,9 @@ import android.widget.ViewFlipper;
 import com.example.app.ourapplication.pref.PreferenceEditor;
 import com.example.app.ourapplication.rest.model.request.SignInReqModel;
 import com.example.app.ourapplication.rest.model.request.SignUpReqModel;
+import com.example.app.ourapplication.rest.model.request.TokenReqModel;
 import com.example.app.ourapplication.rest.model.response.SignInRespModel;
+import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
 import com.example.app.ourapplication.ui.HomeActivity;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -46,6 +48,7 @@ public class LoginActivity extends AppCompatActivity {
     private Button mSignUpButton;
     private TextView mNewUserText;
     private ViewFlipper mScreenFlipper;
+    FcmTokenService mFcmTokenService = new FcmTokenService(this);
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -117,20 +120,22 @@ public class LoginActivity extends AppCompatActivity {
         login.enqueue(new Callback<SignInRespModel>() {
             @Override
             public void onResponse(Call<SignInRespModel> call, Response<SignInRespModel> response) {
-                if(response.body().isSuccess()){
+                if (response.body().isSuccess()) {
                     PreferenceEditor.getInstance(LoginActivity.this).setLoggedInUserName(mUserIdBox.getText().toString(),
                             mPasswordBox.getText().toString());
-                    ((OurApplication)getApplicationContext()).setUserToken(response.body().getToken());
+                    UpdateToken(PreferenceEditor.getInstance(LoginActivity.this).getLoggedInUserName(), mFcmTokenService.getGCMToken());
+                    //((OurApplication)getApplicationContext()).setUserToken(response.body().getToken());
+
                     Intent intent = new Intent(LoginActivity.this, HomeActivity.class);
                     startActivity(intent);
                     finish();
-                }else{
+                } else {
                     Toast.makeText(LoginActivity.this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
                 }
             }
 
             @Override
-            public void onFailure(Call<SignInRespModel> call,Throwable t) {
+            public void onFailure(Call<SignInRespModel> call, Throwable t) {
                 t.printStackTrace();
                 Toast.makeText(LoginActivity.this, getString(R.string.login_failed), Toast.LENGTH_SHORT).show();
             }
@@ -147,6 +152,7 @@ public class LoginActivity extends AppCompatActivity {
         login.enqueue(new Callback<Void>() {
             @Override
             public void onResponse(Call<Void> call,Response<Void> response) {
+                mFcmTokenService.CreateGCMToken();//Create new FCM token and store to preferences
                 login(userId,password);
             }
 
@@ -158,6 +164,55 @@ public class LoginActivity extends AppCompatActivity {
         });
     }
 
+
+
+
+    public  void  UpdateToken(String userid, String token){
+
+
+        TokenReqModel reqModel = new TokenReqModel();
+
+        reqModel.setUserId(userid);
+        reqModel.setToken(token);
+
+
+        //msg = Helper.formCommentMessage("C", keyid, token, message);
+
+        /*Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());*/
+
+        Call<SuccessRespModel> updateToken = ((OurApplication) getApplicationContext() )
+                .getRestApi().UpdateToken(reqModel);
+        updateToken.enqueue(new Callback<SuccessRespModel>() {
+            @Override
+            public void onResponse(Call<SuccessRespModel> call, Response<SuccessRespModel> response) {
+                if (response.body() != null) {
+                    //do something
+
+
+                    if (response.body().isSuccess()) {
+
+                        // Log.d(TAG, "insertFeedData :" + data.get(i));
+                        Toast.makeText(getApplicationContext(), "Token updated Successfully", Toast.LENGTH_LONG).show();
+
+
+                    } else {
+                        Toast.makeText(getApplicationContext(), "Token update response code is not true", Toast.LENGTH_LONG).show();
+                    }
+                } else {
+                    Toast.makeText(getApplicationContext(), "Token update response body is null", Toast.LENGTH_LONG).show();
+                }
+
+            }
+
+            @Override
+            public void onFailure(Call<SuccessRespModel> call, Throwable t) {
+                Log.d(TAG, "Token update Failed: " + t);
+                Toast.makeText(getApplicationContext(), "Token update Failed" + t, Toast.LENGTH_LONG).show();
+            }
+        });
+
+
+    }
 
 
 }

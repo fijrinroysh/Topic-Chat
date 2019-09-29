@@ -17,6 +17,8 @@ import com.example.app.ourapplication.pref.PreferenceEditor;
 import com.example.app.ourapplication.rest.ApiUrls;
 import com.example.app.ourapplication.rest.model.request.ProfileFeedReqModel;
 import com.example.app.ourapplication.rest.model.request.SubscribeReqModel;
+import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
+import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.Subscriber;
 import com.example.app.ourapplication.rest.model.response.SubscriberDataRespModel;
@@ -124,11 +126,11 @@ public class ProfileActivity extends AppCompatActivity{
     private void getUpdatedFeeds(){
         ProfileFeedReqModel reqModel = new ProfileFeedReqModel(mUserId,"2020-12-31 12:00:00");
 
-        Call<SuccessRespModel> queryProfileFeeds = ((OurApplication)getApplicationContext())
+        Call<GetDataRespModel> queryProfileFeeds = ((OurApplication)getApplicationContext())
                 .getRestApi().queryProfileFeed(reqModel);
-        queryProfileFeeds.enqueue(new Callback<SuccessRespModel>() {
+        queryProfileFeeds.enqueue(new Callback<GetDataRespModel>() {
             @Override
-            public void onResponse(Call<SuccessRespModel> call, Response<SuccessRespModel> response) {
+            public void onResponse(Call<GetDataRespModel> call, Response<GetDataRespModel> response) {
                 if (response.body().isSuccess()) {
                     ArrayList<Person> data = response.body().getData();
 
@@ -164,7 +166,7 @@ public class ProfileActivity extends AppCompatActivity{
             }
 
             @Override
-            public void onFailure(Call<SuccessRespModel> call, Throwable t) {
+            public void onFailure(Call<GetDataRespModel> call, Throwable t) {
                 Log.d(TAG, "Query failed for the reson: " + t);
                 Toast.makeText(getApplicationContext(), "Loading Feeds Failed", Toast.LENGTH_LONG).show();
             }

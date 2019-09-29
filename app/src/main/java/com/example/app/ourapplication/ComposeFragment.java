@@ -75,7 +75,8 @@ public class ComposeFragment extends Fragment {
     private Bitmap mBitmap;
     private ImageView img;
     private EditText mMessageBox;
-
+    FcmTokenService mFcmTokenService = new FcmTokenService(getContext());
+    public String token;
     private Uri fileUri; // file url to store image/video
     private Uri filePath;
     private String AbsolutefilePath;
@@ -138,7 +139,7 @@ public class ComposeFragment extends Fragment {
             public void onClick(View view) {
                 String msg = mMessageBox.getText().toString();
                 if (!TextUtils.isEmpty(msg)) {
-                    String token = ((OurApplication)getActivity().getApplicationContext()).getUserToken();
+                    token = mFcmTokenService.getGCMToken();
                     LocationModel location = PreferenceEditor.getInstance(getContext()).getLocation();
 
                     CompleteFeedModel model ;

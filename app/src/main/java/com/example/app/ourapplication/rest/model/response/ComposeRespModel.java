@@ -4,25 +4,30 @@ import com.example.app.ourapplication.rest.model.Model;
 import com.fasterxml.jackson.annotation.JsonCreator;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
+import java.util.ArrayList;
+
 /**
  * Created by ROYSH on 2/21/2017.
  */
 public class ComposeRespModel extends Model  {
 
-        private boolean mIsSuccess;
+    private boolean mIsSuccess;
+    private ArrayList<Person> mData;
 
-        @JsonCreator
-        public ComposeRespModel(@JsonProperty("success") Boolean success) {
-            this.mIsSuccess = success;
-        }
+    @JsonCreator
+    public ComposeRespModel(@JsonProperty("success") Boolean success, @JsonProperty("data") ArrayList<Person> data) {
+        this.mIsSuccess = success;
+        this.mData = data;
 
-        public boolean isSuccess() {
-            return mIsSuccess;
-        }
+    }
 
-        public void setIsSuccess(boolean isSuccess) {
-            this.mIsSuccess = isSuccess;
-        }
+    public boolean isSuccess() {
+        return mIsSuccess;
+    }
+
+    public ArrayList<Person> getData() {
+        return mData;
+    }
 
 
 }

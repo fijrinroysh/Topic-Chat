@@ -2,10 +2,13 @@ package com.example.app.ourapplication;
 
 import android.content.Context;
 import android.support.annotation.NonNull;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.widget.Toast;
 
 import com.example.app.ourapplication.pref.PreferenceEditor;
+import com.example.app.ourapplication.rest.model.request.TokenReqModel;
+import com.example.app.ourapplication.rest.model.response.SuccessRespModel;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -13,10 +16,15 @@ import com.google.firebase.iid.InstanceIdResult;
 import com.google.firebase.messaging.FirebaseMessagingService;
 import com.google.firebase.messaging.RemoteMessage;
 
-public class FcmTokenService   {
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
-    private Context mContext;
+public class FcmTokenService extends AppCompatActivity {
+
+    private static Context mContext;
     public static String TAG = "FcmTokenService";
+
 
     public FcmTokenService(Context context) {
         this.mContext = context;
@@ -24,7 +32,7 @@ public class FcmTokenService   {
 
 
 
-    public void CreateGCMToken() {
+    public  void CreateGCMToken() {
         // Get token
         // [START retrieve_current_token]
         FirebaseInstanceId.getInstance().getInstanceId()
@@ -38,6 +46,7 @@ public class FcmTokenService   {
 
                         String token = task.getResult().getToken();
                         Log.d(TAG, "GCM TOKEN IS: " + token);
+                        Log.d(TAG, "GCM USER IS: " + PreferenceEditor.getInstance(mContext).getLoggedInUserName());
                         // Log and toast
                         //String msg = getString(R.string.msg_token_fmt, token);
 
@@ -47,7 +56,7 @@ public class FcmTokenService   {
 
 
 
-                        //Toast.makeText(mContext, token, Toast.LENGTH_SHORT).show();
+                        //Toast.makeText(mContext,PreferenceEditor.getInstance(mContext).getLoggedInUserName() + token, Toast.LENGTH_SHORT).show();
                     }
                 });
     }
@@ -58,9 +67,15 @@ public class FcmTokenService   {
         return token;
     }
 
-    public void storeGCMToken(String token){
+    public static void storeGCMToken(String token){
         PreferenceEditor.getInstance(mContext).setGCMToken(token);
     }
+
+
+
+
+
+
 }
 
 

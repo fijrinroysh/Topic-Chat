@@ -23,12 +23,15 @@ import android.widget.Toast;
 import com.example.app.ourapplication.DiscussionActivity;
 import com.example.app.ourapplication.FcmTokenService;
 import com.example.app.ourapplication.Keys;
+import com.example.app.ourapplication.LoginActivity;
 import com.example.app.ourapplication.R;
+
 import com.example.app.ourapplication.database.DBHelper;
 import com.example.app.ourapplication.pref.PreferenceEditor;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.wss.FCMInterface;
 import com.example.app.ourapplication.wss.WebSocketListener;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.iid.FirebaseInstanceId;
@@ -38,15 +41,23 @@ import com.google.firebase.messaging.RemoteMessage;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 public class FcmMessagingService extends FirebaseMessagingService  {
 
     private DBHelper mDBHelper = new DBHelper(this);
+
     public static String TAG = "FcmMessagingService";
     public FcmTokenService mFcmTokenService = new FcmTokenService(this);
+    private LoginActivity mLoginActivity = new LoginActivity();
+
+
+
     //FCMInterface mFCMInterface;
    // private Context mContext = getApplicationContext();
 
@@ -102,13 +113,13 @@ public class FcmMessagingService extends FirebaseMessagingService  {
 
 
 
-
-
     @Override
     public void onNewToken(String token) {  //Method is called when new token is created
 
         mFcmTokenService.storeGCMToken(token);
-        Log.d(TAG, token + " - Token created ");
+        mLoginActivity.UpdateToken(PreferenceEditor.getInstance(this).getLoggedInUserName(), mFcmTokenService.getGCMToken());
+
+        Log.d(TAG, token + " - Token created and stored in preferences");
     }
 
     @Override
@@ -133,7 +144,7 @@ public class FcmMessagingService extends FirebaseMessagingService  {
         intent.putExtra("person", person);
         broadcaster.sendBroadcast(intent);
         mDBHelper.insertCommentData(person);
-        Notifychats(person);
+        Notifychatsummary(person);
         /*Bundle bundle = new Bundle;
         //bundle.putSerializable("data", remoteMessage);
         intent.putExtra("postid", remoteMessage.getData().get("postid"));
@@ -175,6 +186,17 @@ public class FcmMessagingService extends FirebaseMessagingService  {
 
     private void Notifychats(final Person person) {
 
+
+        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+        Log.d(TAG, "Notif id is:  " +notifid);
+        /*try {
+            notifid = Integer.parseInt(person.getPostId().replaceAll("^\"|\"$", ""));
+        } catch(NumberFormatException nfe) {
+            Log.d(TAG, "Could not parse " + nfe);
+            Log.d(TAG, "Notif id is:  " + person.getPostId().replaceAll("^\"|\"$", ""));
+
+        }*/
+
         final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
         Intent notificationIntent = new Intent(getApplicationContext(), DiscussionActivity.class);
         notificationIntent.putExtra("person", person);
@@ -195,11 +217,15 @@ public class FcmMessagingService extends FirebaseMessagingService  {
                 .setStyle(new Notification.BigTextStyle()
                         .bigText(person.getMessage()))
                         // .setSmallIcon(setImageBitmap(Helper.decodeImageString(notificationIcon)))
+                        //.setGroup(person.getPostId())
                 .setContentIntent(pendingIntent);
+        notificationManager.notify(notifid, mBuilder.build());
+
+
         // hide the notification after its selected
         // notification.flags |= Notification.FLAG_AUTO_CANCEL;
 
-        Handler uiHandler = new Handler(Looper.getMainLooper());
+      /*  Handler uiHandler = new Handler(Looper.getMainLooper());
         uiHandler.post(new Runnable(){
             @Override
             public void run() {
@@ -224,7 +250,7 @@ public class FcmMessagingService extends FirebaseMessagingService  {
                             }
                         });
             }
-        });
+        });*/
 
         /*
         Picasso.with(getApplicationContext())
@@ -248,6 +274,59 @@ public class FcmMessagingService extends FirebaseMessagingService  {
                     }
                 });*/
     }
+
+
+
+
+    private void Notifychatsummary(final Person person) {
+
+
+        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+        Log.d(TAG, "Notif id is:  " +notifid);
+
+
+        final NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(getApplicationContext(), DiscussionActivity.class);
+        notificationIntent.putExtra("person", person);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(getApplicationContext(), 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+
+        //Bitmap bitmap = Helper.getBitmapFromURL(notificationIcon);
+
+        Notification newMessageNotification = new NotificationCompat.Builder(getApplicationContext())
+                .setAutoCancel(true)
+                .setSmallIcon(R.mipmap.app_icon)
+                .setContentTitle(person.getSenderName())
+                .setContentText(person.getMessage())
+                .setLargeIcon(BitmapFactory.decodeResource(getResources(), R.drawable.mickey))
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setGroup(person.getPostId())
+                .setContentIntent(pendingIntent)
+                .build();
+
+
+        Notification summaryNotification =
+                new NotificationCompat.Builder(getApplicationContext())
+
+                                //set content text to support devices running API level < 24
+                        .setSmallIcon(R.mipmap.app_icon)
+                                //build summary info into InboxStyle template
+                        .setStyle(new NotificationCompat.InboxStyle()
+                                .setSummaryText(mDBHelper.getFeedDataColumn(person.getPostId(), 3))//select the feed message to set as summary
+                        )
+                                //specify which group this notification belongs to
+                        .setGroup(person.getPostId())
+                        .setContentIntent(pendingIntent)
+                                //set this notification as the summary for the group
+                        .setGroupSummary(true)
+                        .build();
+        notificationManager.notify(notifid,newMessageNotification);
+        notificationManager.notify(person.getPostId(),0, summaryNotification);
+
+    }
+
 
 }
 
