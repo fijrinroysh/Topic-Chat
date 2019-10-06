@@ -39,7 +39,7 @@ public class DBHelper extends SQLiteOpenHelper {
     private SQLiteDatabase mydatabase;
 
     public DBHelper(Context context) {
-        super(context, "FEED", null, 34); //24 is the database version
+        super(context, "FEED", null, 35); //34 is the database version
     }
 
     @Override
@@ -176,7 +176,7 @@ public class DBHelper extends SQLiteOpenHelper {
         String  columndata;
         SQLiteDatabase db = this.getReadableDatabase();
         Cursor msg_res =  db.rawQuery("select * from MESSAGE_DATA where " + MESSAGE_ID_COLUMN + " = \"" + id + "\"", null);
-
+        Log.d(TAG, "get column data for id: " + id);
         msg_res.moveToFirst();
 
         if (msg_res.getCount() != 0){

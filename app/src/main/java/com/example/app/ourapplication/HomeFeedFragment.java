@@ -3,8 +3,10 @@ package com.example.app.ourapplication;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.graphics.Bitmap;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
@@ -14,6 +16,7 @@ import android.provider.Settings;
 import android.support.annotation.Nullable;
 import android.support.design.widget.CoordinatorLayout;
 import android.support.v4.app.Fragment;
+import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -94,6 +97,7 @@ public class HomeFeedFragment extends Fragment {
         mDBHelper = new DBHelper(getContext());
 
 
+
     }
 
     @Override
@@ -105,8 +109,7 @@ public class HomeFeedFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
        // mFeeds = mDBHelper.getFeedDataAll();
-        mFeeds.clear();
-        mDBHelper.deleteFeedData();
+
         mFeedListAdapter = new FeedRVAdapter(getContext(),mFeeds);
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_homefeed);
         ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
@@ -115,6 +118,8 @@ public class HomeFeedFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(mFeedListAdapter);
+        mFeeds.clear();
+        mFeeds.addAll(mDBHelper.getFeedDataAll());
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -129,7 +134,7 @@ public class HomeFeedFragment extends Fragment {
 
         });
 
-
+//if (mFeeds.size()==0){
         /**
          * Showing Swipe Refresh animation on activity create
          * As animation won't start on onCreate, post runnable is used
@@ -137,37 +142,49 @@ public class HomeFeedFragment extends Fragment {
         mSwipeRefreshLayout.post(new Runnable() {
             @Override
             public void run() {
+
+                //mDBHelper.deleteFeedData();
                 //HTTP requst to fetch data for Homefeed
                 mSwipeRefreshLayout.setRefreshing(true);
                 getUpdatedFeeds();
 
             }
         });
+//}
 
         Log.d(TAG, "Length of Feed Array" + ": " + mFeeds.size());
 //        getSubscribers();
+
+
+
     }
 
 
     @Override
     public void onPause() {
-        super.onPause();
+
+        LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
         //mFeedListAdapter.onViewDetachedFromWindow(ViewHolder);
-        recyclerView.setAdapter(null);
-
-
+        recyclerView.setAdapter(mFeedListAdapter);
+        super.onPause();
     }
 
     @Override
     public void onResume() {
+
+        LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
+                new IntentFilter("feedevent"));
+        recyclerView.setAdapter(mFeedListAdapter);
+
         super.onResume();
         //mFeedListAdapter.onViewDetachedFromWindow(ViewHolder);
-        recyclerView.setAdapter(mFeedListAdapter);
+
     }
 
 
     @Override
     public void onDestroy() {
+
         super.onDestroy();
        // mWebSocketClient.removeWebSocketListener(this);
 
@@ -226,8 +243,8 @@ public class HomeFeedFragment extends Fragment {
                     ArrayList<Person> data = response.body().getData();
                     if (data.size() > 0) {
                         for (int i = 0; i < data.size(); i++) {
-                            mDBHelper.insertFeedData(data.get(i));
-                            Log.d(TAG, "insertFeedData :" + data.get(i));
+                           // mDBHelper.insertFeedData(data.get(i));
+                           // Log.d(TAG, "insertFeedData :" + data.get(i));
                             mFeeds.add(0, data.get(i));
                             mFeedListAdapter.notifyItemInserted(0);
                         }
@@ -250,6 +267,37 @@ public class HomeFeedFragment extends Fragment {
         mSwipeRefreshLayout.setRefreshing(false);
     }
 
+
+
+
+    private BroadcastReceiver mMessageReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(Context context, Intent intent) {
+            // Get extra data included in the Intent
+            // String message = intent.getStringExtra("chatdata");
+            //Log.d(TAG, "Got message: " + message);
+
+                /*Got message: {postid=201907282340009486946972, userid=, subscriptionflag=, name=, time=2000-12-31 12:00:00, type=C, image=, message=Ffw, profileimage=}*/
+
+            Person person = (Person) intent.getSerializableExtra("person");
+
+            Log.d(TAG, "I am message type F");
+
+            if (person.getType().equals("F")) {
+                Log.d(TAG, "I am message type F:");
+                Log.d(TAG, person.getPostId());
+                mFeeds.add(person);
+                mFeedListAdapter.notifyItemInserted(0);
+                recyclerView.scrollToPosition(0);
+
+
+
+            }
+
+        }
+
+
+    };
 
 /*    private void getSubscribers(){
 

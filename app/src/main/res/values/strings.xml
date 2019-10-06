@@ -49,4 +49,5 @@
     <string name="cancel">Cancel</string>
     <string name="gps_disabled">GPS Not enabled</string>
     <string name="enable_gps">Do you want to enable it?</string>
+    <string name="reply_name">REPLY</string>
 </resources>

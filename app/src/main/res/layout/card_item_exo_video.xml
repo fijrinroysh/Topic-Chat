@@ -27,8 +27,7 @@
                 android:layout_alignParentTop="true"
                 android:layout_marginRight="16dp"
                 android:src="@drawable/profile"
-                android:scaleType="fitXY"
-                />
+                android:scaleType="fitXY" />
 
             <TextView
                 android:id="@+id/sender_name"
@@ -40,47 +39,39 @@
                 android:textStyle="bold"
                 android:textColor="@color/text_color"/>
 
-            <RelativeLayout
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:gravity="top|right"
-                android:layout_toRightOf="@+id/sender_name"
-                >
-
-                <ImageView
-                    android:id="@+id/subscribe"
-                    android:layout_width="20dp"
-                    android:layout_height="20dp"
-                    android:src="@mipmap/subscribe_icon"
-                    />
-
-               
-            </RelativeLayout>
 
             <TextView
                 android:id="@+id/message_time"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/sender_name"
-                android:layout_toRightOf="@+id/sender_photo"
+                android:layout_alignParentRight="true"
+                android:layout_alignParentTop="true"
                 android:textSize="12sp"
                 />
-
+            <ImageView
+                android:id="@+id/subscribe"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                android:layout_below="@+id/message_time"
+                android:layout_alignParentRight="true"
+                android:src="@mipmap/subscribe_icon"
+                />
             <TextView
                 android:id="@+id/sender_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/sender_photo"
+                android:layout_toRightOf="@+id/sender_photo"
+                android:layout_below="@+id/sender_name"
                 android:textSize="15sp"
-                android:textColor="@color/text_color"
-                />
+                android:textColor="@color/text_color" />
+
 
             <RelativeLayout
                 android:id="@+id/relative_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/sender_message">
+                android:layout_below="@+id/sender_photo"
+                android:layout_margin="8dp">
 
 
                 <FrameLayout

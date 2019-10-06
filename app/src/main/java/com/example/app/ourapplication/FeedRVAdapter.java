@@ -5,7 +5,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapShader;
+import android.graphics.Canvas;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Shader;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -57,6 +61,7 @@ import com.google.android.exoplayer2.ui.SimpleExoPlayerView;
 import com.google.android.exoplayer2.upstream.DefaultHttpDataSourceFactory;
 import com.squareup.picasso.Picasso;
 import com.example.app.ourapplication.util.Helper;
+import com.squareup.picasso.Transformation;
 
 import java.util.List;
 
@@ -286,8 +291,8 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 Log.d(TAG, "sender name :" + item.getUserId());
                 Log.d(TAG, "userid :" + userId);
                 token=OurApplication.getUserToken();
-
-                if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1, 1).equals("0")) {
+                vh1.subscribe.setImageResource(R.mipmap.subscribe_icon);
+               /* if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1, 1).equals("0")) {
                     Log.d(TAG, "I enter here:1" );
                     vh1.subscribe.setImageResource(R.mipmap.subscribe_icon);
                     subscription="subscribe";
@@ -298,9 +303,9 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     vh1.subscribe.setImageResource(R.mipmap.unsubscribe_icon);
                     subscription="unsubscribe";
 
-                }
+                }*/
 
-                Picasso(item.getPhotoId(), vh1.senderPhoto);
+                Picasso_circle(item.getPhotoId(), vh1.senderPhoto);
 
                 openProfile(item,vh1.senderPhoto);
 
@@ -336,11 +341,11 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 vh2.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
                 Picasso(item.getPhotoMsg(), vh2.messagePhoto);
                 Log.d(TAG, "IMAGE URL :" + item.getPhotoMsg());
-                Picasso(item.getPhotoId(), vh2.senderPhoto);
+                Picasso_circle(item.getPhotoId(), vh2.senderPhoto);
                 token=OurApplication.getUserToken();
-
-                Log.d(TAG, "SUBSCRIPTION :" + item.getSubscriptionFlag());
-                if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1,1).equals("0")) {
+                vh2.subscribe.setImageResource(R.mipmap.subscribe_icon);
+              //  Log.d(TAG, "SUBSCRIPTION :" + item.getSubscriptionFlag());
+               /* if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1,1).equals("0")) {
                     Log.d(TAG, "I enter here:1" );
                     vh2.subscribe.setImageResource(R.mipmap.subscribe_icon);
                     subscription="subscribe";
@@ -351,7 +356,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     vh2.subscribe.setImageResource(R.mipmap.unsubscribe_icon);
                     subscription="unsubscribe";
 
-                }
+                }*/
 
                 openProfile(item,vh2.senderPhoto);
                 openDiscussion(item, vh2.cv);
@@ -408,6 +413,9 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 vh3.senderMessage.setText(item.getMessage());
                 vh3.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
                 token=OurApplication.getUserToken();
+
+                vh3.subscribe.setImageResource(R.mipmap.subscribe_icon);
+                /*
                 Log.d(TAG, "SUBSCRIPTION :" + item.getSubscriptionFlag());
                 if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1,1).equals("0")) {
                     Log.d(TAG, "I enter here:1" );
@@ -420,7 +428,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     vh3.subscribe.setImageResource(R.mipmap.unsubscribe_icon);
                     subscription="unsubscribe";
 
-                }
+                }*/
                 Log.d(TAG, "IMAGE URL :" + item.getPhotoMsg());
                 int index = item.getPhotoMsg().lastIndexOf('/');
                 String Thumbnail_URL = item.getPhotoMsg().substring(0, index);
@@ -567,7 +575,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     }
                 });
 
-                Picasso(item.getPhotoId(), vh3.senderPhoto);
+                Picasso_circle(item.getPhotoId(), vh3.senderPhoto);
                 openProfile(item,vh3.senderPhoto);
                 openDiscussion(item, vh3.cv);
                 setAnimation(vh3.cv, i);
@@ -597,38 +605,9 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 vh4.senderMessage.setText(item.getMessage());
                 token=OurApplication.getUserToken();
                 vh4.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
-/*                Log.d(TAG, "SUBSCRIPTION :" + item.getSubscriptionFlag());
-                if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1,1).equals("0")) {
-                    Log.d(TAG, "I enter here:1" );
-                    vh4.subscribe.setImageResource(R.mipmap.subscribe_icon);
-                    subscription="subscribe";
-                }
-                else if(item.getSubscriptionFlag()!=null && item.getSubscriptionFlag().substring(1,1).equals("1"))
-                {
-                    Log.d(TAG, "I enter here:2" );
-                    vh4.subscribe.setImageResource(R.mipmap.unsubscribe_icon);
-                    subscription="unsubscribe";
 
-                }
-*/
-                Picasso(item.getPhotoId(), vh4.senderPhoto);
-  /*             vh4.subscribe.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (subscription.equals("subscribe")) {
-                            Log.d(TAG, "subscriprion:" + subscription);
-                            vh4.subscribe.setImageResource(R.mipmap.unsubscribe_icon);
-                            Helper.PostSubscription(v, token, item.getPostId(), "Y");
-                            subscription = "unsubscribe";
+                Picasso_circle(item.getPhotoId(), vh4.senderPhoto);
 
-                        } else {
-                            Log.d(TAG, "unsubscriprion:" + subscription);
-                            vh4.subscribe.setImageResource(R.mipmap.subscribe_icon);
-                            Helper.PostSubscription(v, token, item.getPostId(), "N");
-                            subscription = "subscribe";
-                        }
-                    }
-                });*/
                 break;
 
 
@@ -639,7 +618,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 token=OurApplication.getUserToken();
                 vh5.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
 
-                Picasso(item.getPhotoId(), vh5.senderPhoto);
+                Picasso_circle(item.getPhotoId(), vh5.senderPhoto);
 
                 break;
 
@@ -694,6 +673,14 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
 
+    void Picasso_circle(String URL, ImageView imageView) {
+        Picasso.with(mContext).load(URL)
+                .transform(new CircleTransform())
+                .placeholder(R.drawable.mickey)
+                .error(R.drawable.mickey)
+                .into(imageView);
+    }
+
 
     void Picasso_thumbnail(String URL, ImageView imageView) {
         Picasso.with(mContext).load(URL)
@@ -732,9 +719,40 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
         });
     }
 
+    public class CircleTransform implements Transformation {
+        @Override
+        public Bitmap transform(Bitmap source) {
+            int size = Math.min(source.getWidth(), source.getHeight());
 
+            int x = (source.getWidth() - size) / 2;
+            int y = (source.getHeight() - size) / 2;
 
+            Bitmap squaredBitmap = Bitmap.createBitmap(source, x, y, size, size);
+            if (squaredBitmap != source) {
+                source.recycle();
+            }
 
+            Bitmap bitmap = Bitmap.createBitmap(size, size, source.getConfig());
+
+            Canvas canvas = new Canvas(bitmap);
+            Paint paint = new Paint();
+            BitmapShader shader = new BitmapShader(squaredBitmap,
+                    Shader.TileMode.CLAMP, Shader.TileMode.CLAMP);
+            paint.setShader(shader);
+            paint.setAntiAlias(true);
+
+            float r = size / 2f;
+            canvas.drawCircle(r, r, r, paint);
+
+            squaredBitmap.recycle();
+            return bitmap;
+        }
+
+        @Override
+        public String key() {
+            return "circle";
+        }
+    }
 
 
 }

@@ -60,6 +60,20 @@ public class Helper extends AppCompatActivity{
         return dateFormat.format(new Date());
     }
 
+
+    public static Long convertoTimeStamp(String posttime){
+        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.US);
+
+    try {
+          return   dateFormat.parse(posttime).getTime();
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+        return null;
+    }
+
+
+
     public static String getRelativeTime(String posttime){
 
         Date currDate = new Date();
