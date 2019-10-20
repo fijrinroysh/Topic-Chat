@@ -5,15 +5,25 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.os.Handler;
+import android.os.Looper;
+import android.os.Message;
 import android.provider.Settings;
+import android.support.annotation.NonNull;
 import android.support.v4.app.NotificationManagerCompat;
 import android.support.v7.app.NotificationCompat;
 import android.util.Log;
+import android.widget.RemoteViews;
 
 import com.example.app.ourapplication.database.DBHelper;
 import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.util.Helper;
+import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Target;
+
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -36,7 +46,6 @@ public class NotificationActivity {
 
 
     public void Notifychatsummary(final Person person) {
-
 
         int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
 
@@ -94,72 +103,6 @@ public class NotificationActivity {
         notificationManager.notify(person.getPostId(), notifid, notif);
 
     }
-
-
-
-    public void Notifychatmessage(final Person person, String mTitle) {
-
-
-        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
-
-        Log.d(TAG, "Notif id is:  " + notifid);
-
-        long msgtime = Helper.convertoTimeStamp(person.getTimeMsg());
-        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
-        Intent notificationIntent = new Intent(mContext, DiscussionActivity.class);
-        notificationIntent.putExtra("person", person);
-        notificationIntent.setAction(Intent.ACTION_MAIN);
-        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
-        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, 1, notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-
-        final Notification notif = new NotificationCompat.Builder(mContext)
-                .setAutoCancel(true)
-                .setContentTitle(person.getSenderName() )
-                .setContentText(person.getMessage())
-                .setSmallIcon(R.mipmap.app_icon)
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                .setContentIntent(pendingIntent)
-                .setGroup(person.getPostId())
-                .build();
-
-        //MESSAGES.add(new NotificationCompat.MessagingStyle.Message(person.getMessage(),msgtime,person.getSenderName() ));
-            // List<NotificationCompat.MessagingStyle.Message> MESSAGES = new ArrayList<>();
-
-
-        NotificationCompat.MessagingStyle messagingStyle =
-                new NotificationCompat.MessagingStyle("You");
-        messagingStyle.setConversationTitle(mTitle);
-        messagingStyle.addMessage((new NotificationCompat.MessagingStyle.Message(person.getMessage(), msgtime, person.getSenderName())));
-
-
-
-
-        //Person user = new Person.Builder().setIcon(userIcon).setName(userName).build();
-        Notification summ_notif = new NotificationCompat.Builder(mContext)
-                .setSmallIcon(R.mipmap.app_icon)
-                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
-                .setContentIntent(pendingIntent)
-                .setAutoCancel(true)
-                        //.setColor(Color.BLUE)
-                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
-                .setStyle(messagingStyle)
-                .setGroupSummary(true)
-                .setGroup(person.getPostId())
-                .build();
-
-
-
-        notificationManager.notify(notifid,notif);
-        notificationManager.notify(person.getPostId(),0,summ_notif);
-
-    }
-
-
-
-
 
 
     public void Notifychats(final Person person) {
@@ -253,4 +196,187 @@ public class NotificationActivity {
                 });*/
     }
 
+
+
+    public void NotifyFeed(final Person person) {
+
+
+        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+        Log.d(TAG, "Notif id is:  " + notifid);
+
+        long msgtime = Helper.convertoTimeStamp(person.getTimeMsg());
+        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(mContext, DiscussionActivity.class);
+        notificationIntent.putExtra("person", person);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext,notifid , notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+
+        final Notification notif = new NotificationCompat.Builder(mContext)
+                .setAutoCancel(true)
+                .setContentTitle(person.getMessage())
+                .setContentText("New Topic by "+person.getSenderName())
+                .setSmallIcon(R.mipmap.app_icon)
+                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setContentIntent(pendingIntent)
+                .setGroup(person.getPostId())
+                .build();
+
+
+        notificationManager.notify(person.getPostId(), 0, notif);
+
+       /* Handler uiHandler = new Handler(Looper.getMainLooper());
+        uiHandler.post(new Runnable(){
+            @Override
+            public void run() {
+                Picasso.with(mContext)
+                        .load(person.getPhotoId())
+                        .placeholder(R.drawable.mickey)
+                        .error(R.drawable.mickey)
+                        .into(new Target() {
+                            @Override
+                            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+                                mBuilder.setLargeIcon(bitmap);
+                                notificationManager.notify(1, mBuilder.build());
+                            }
+
+                            @Override
+                            public void onBitmapFailed(Drawable errorDrawable) {
+                                notificationManager.notify(1, mBuilder.build());
+                            }
+
+                            @Override
+                            public void onPrepareLoad(Drawable placeHolderDrawable) {
+                            }
+                        });
+            }
+        });*/
+
+
+        final RemoteViews contentView = notif.contentView;
+        final int iconId = R.drawable.mickey;
+        // Use Picasso with RemoteViews to load image into a notification
+//        Picasso.with(mContext).load(person.getPhotoId()).into(contentView, 0, iconId, notif);
+
+
+    }
+
+
+    public void NotifyChat(final Person person, String mTitle) {
+
+
+        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+        Log.d(TAG, "Notif id is:  " + notifid);
+
+        long msgtime = Helper.convertoTimeStamp(person.getTimeMsg());
+        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        Intent notificationIntent = new Intent(mContext, DiscussionActivity.class);
+        notificationIntent.putExtra("person", person);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, notifid, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+
+
+
+        //MESSAGES.add(new NotificationCompat.MessagingStyle.Message(person.getMessage(),msgtime,person.getSenderName() ));
+        // List<NotificationCompat.MessagingStyle.Message> MESSAGES = new ArrayList<>();
+
+
+        NotificationCompat.MessagingStyle messagingStyle =
+                new NotificationCompat.MessagingStyle("You");
+        messagingStyle.setConversationTitle(mTitle);
+
+        messagingStyle.addMessage((new NotificationCompat.MessagingStyle.Message(person.getMessage(), msgtime, person.getSenderName())));
+
+
+        //Person user = new Person.Builder().setIcon(userIcon).setName(userName).build();
+        Notification summ_notif = new NotificationCompat.Builder(mContext)
+                .setSmallIcon(R.mipmap.app_icon)
+                .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
+                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                .setContentIntent(pendingIntent)
+                .setAutoCancel(true)
+                        //.setColor(Color.BLUE)
+                .setCategory(NotificationCompat.CATEGORY_MESSAGE)
+                .setStyle(messagingStyle)
+                .setGroupSummary(true)
+                .setGroup(person.getPostId())
+
+
+                .build();
+
+
+        notificationManager.notify(person.getPostId(), 1, summ_notif);
+
+    }
+
+
+
+
+
+
+    public void NotifyMessagingStyleNotification(List<Person> persons, Person person, String title) {
+
+
+        int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
+
+        Log.d(TAG, "Notif id is:  " + notifid);
+        final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+
+        Intent notificationIntent = new Intent(mContext, DiscussionActivity.class);
+        notificationIntent.putExtra("person", person);
+        notificationIntent.setAction(Intent.ACTION_MAIN);
+        notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+        PendingIntent pendingIntent = PendingIntent.getActivity(mContext, notifid, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
+                NotificationCompat.MessagingStyle messagingStyle = buildMessageList(persons, person,title);
+                Notification notification = new NotificationCompat.Builder(mContext)
+                        .setStyle(messagingStyle)
+                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+                        .setContentIntent(pendingIntent)
+                        .setAutoCancel(true)
+                        .setSmallIcon(R.mipmap.app_icon)
+                        .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
+                        .build();
+                notificationManager.notify(person.getPostId(), 1, notification);
+            }
+
+            private NotificationCompat.MessagingStyle buildMessageList(List<Person> persons, Person prsn , String topic) {
+
+
+
+                final String MY_DISPLAY_NAME = "Me";
+                NotificationCompat.MessagingStyle messagingStyle =
+                        new NotificationCompat.MessagingStyle(MY_DISPLAY_NAME)
+                                .setConversationTitle(topic);
+
+                for (Person person : persons) {
+                   // String sender = message.sender().equals(MY_DISPLAY_NAME) ? null : message.sender();
+                    //long msgtime = Helper.convertoTimeStamp(person.getTimeMsg());
+                    messagingStyle.addMessage(new NotificationCompat.MessagingStyle.Message(person.getMessage(), get_msgtime(person), person.getSenderName()));
+
+                }
+                messagingStyle.addMessage(new NotificationCompat.MessagingStyle.Message(prsn.getMessage(), get_msgtime(prsn), prsn.getSenderName()));
+                return messagingStyle;
+            }
+
+    public long get_msgtime(Person p) {
+      //  Helper helper = new Helper();
+        long msg_time = Helper.convertoTimeStamp(p.getTimeMsg());
+
+        return msg_time;
+    }
+
+
 }
+
+
+
+
+
+
+
+

@@ -5,7 +5,7 @@
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     app:elevation="100dp"
-    android:layout_margin="1dp">
+    android:layout_margin="3dp">
 
     <RelativeLayout
         android:layout_width="match_parent"
@@ -28,8 +28,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_toRightOf="@+id/sender_photo"
-            android:textSize="14sp"
-            android:textStyle="bold"
+            android:textSize="15sp"
             android:textColor="@color/text_color"/>
 
 
@@ -55,7 +54,8 @@
             android:layout_height="wrap_content"
             android:layout_toRightOf="@+id/sender_photo"
             android:layout_below="@+id/sender_name"
-            android:textSize="15sp"
+            android:textSize="14sp"
+            android:textStyle="bold"
             android:textColor="@color/text_color" />
 
     </RelativeLayout>

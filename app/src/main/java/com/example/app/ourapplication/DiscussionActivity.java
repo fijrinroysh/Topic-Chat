@@ -5,10 +5,12 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Looper;
 import android.support.v4.app.NotificationManagerCompat;
+import android.support.v4.content.ContextCompat;
 import android.support.v4.content.LocalBroadcastManager;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
@@ -21,6 +23,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.app.ourapplication.FeedRVAdapter;
@@ -51,6 +54,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
+import static com.example.app.ourapplication.rest.ApiUrls.HTTP_URL;
 import static com.example.app.ourapplication.rest.ApiUrls.WS_URL;
 
 
@@ -97,7 +101,11 @@ import static com.example.app.ourapplication.rest.ApiUrls.WS_URL;
 /**
  * Created by ROYSH on 8/3/2016.
  */
-public class DiscussionActivity extends AppCompatActivity implements WebSocketListener {
+public class DiscussionActivity extends AppCompatActivity  {
+
+
+
+
 
     private List<Person> mComments = new ArrayList<>();
     private FeedRVAdapter mCommentListAdapter;
@@ -110,6 +118,8 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
     private RecyclerView recyclerView;
     private static View view;
     private  String token;
+    private Person person;
+    TextView senderMsg;
 
     FcmTokenService mFcmTokenService = new FcmTokenService(this);
 
@@ -121,16 +131,17 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
         //token = ((OurApplication) getApplicationContext()).getUserToken();
         Button mSendButton = (Button) findViewById(R.id.send_button);
         final EditText mMessageBox = (EditText) findViewById(R.id.msg_box);
+        senderMsg = (TextView) findViewById(R.id.sender_message);
         //mWebSocketClient = ((OurApplication)getApplicationContext()).getClient();
         //mWebSocketClient.addWebSocketListener(this);
         //token = ((OurApplication)getApplicationContext()).getUserToken();
-
+        UI.showSoftKeyboard(this,mMessageBox);
         token=mFcmTokenService.getGCMToken();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
         recyclerView.setLayoutManager(llm);
         // mWebSocketClient.sendMessage(Helper.formSubscribeMessage("S", keyid, token));
-        Person person = (Person) getIntent().getSerializableExtra("person");
+        person = (Person) getIntent().getSerializableExtra("person");
         keyid = person.getPostId();
         Log.d(TAG, "keyid:" + keyid);
         if (keyid != null) {
@@ -146,6 +157,27 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
             //PostSubscription(view,keyid, mComments.get(0).getUserId(),"Y");
             // Helper.PostSubscription(view,token, keyid, "Y");
 
+
+
+
+            if (Build.VERSION.SDK_INT >= 11) {
+                recyclerView.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
+                    @Override
+                    public void onLayoutChange(View v,
+                                               int left, int top, int right, int bottom,
+                                               int oldLeft, int oldTop, int oldRight, int oldBottom) {
+                        if (bottom < oldBottom) {
+                            recyclerView.postDelayed(new Runnable() {
+                                @Override
+                                public void run() {
+                                    recyclerView.smoothScrollToPosition(
+                                            recyclerView.getAdapter().getItemCount() - 1);
+                                }
+                            }, 100);
+                        }
+                    }
+                });
+            }
 
 
         }
@@ -317,12 +349,17 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                 Log.d(TAG, person.getPostId());
 
                 if (person.getPostId().equals(keyid)) {
-                    //Add to Comment array if it belongs to same post id and notify dataset changed
-                    mComments.add(person);
-                    mCommentListAdapter.notifyDataSetChanged();
-                    recyclerView.scrollToPosition(mComments.size() - 1);
+                    //person.setSubscriptionFlag("");
+                    //person.setSenderName("You");
+                    //person.setPhotoId("");
 
+                    Log.d(TAG, mComments.get(mComments.size() - 1).getMessage());
+                    Log.d(TAG, person.getMessage());
+                    if(mComments.get(mComments.size() - 1).getMessage().equals(person.getMessage())){
+                        mComments.set(mComments.size() - 1,person);
+                        mCommentListAdapter.notifyItemChanged(mComments.size() - 1);
 
+                    }
                 }
             }
 
@@ -330,6 +367,10 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
 
 
         };
+
+
+
+
 
 
         private void postchat(String id, String token, String message) {
@@ -341,9 +382,18 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
             reqModel.setType("C");
             reqModel.setToken(token);
 
+            final Person prsn = new Person(
+                    reqModel.getType(),
+                    reqModel.getPostId(),
+                    PreferenceEditor.getInstance(DiscussionActivity.this).getLoggedInUserName(),
+                    "You",
+                    reqModel.getMessage(),
 
-            //msg = Helper.formCommentMessage("C", keyid, token, message);
-
+                    "",
+                    "",
+                    reqModel.getTime(),
+                    "SENT"
+            );
         /*Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());*/
 
             Call<SuccessRespModel> composeChat = ((OurApplication) getApplicationContext())
@@ -359,6 +409,10 @@ public class DiscussionActivity extends AppCompatActivity implements WebSocketLi
                              Log.d(TAG, "Response body for post chat :" + response.body());
                             Toast.makeText(getApplicationContext(), "Chat Posted Successfully", Toast.LENGTH_LONG).show();
 
+                            mComments.add(prsn);
+                            recyclerView.scrollToPosition(mComments.size() - 1);
+                            mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
+                            //msg = Helper.formCommentMessage("C", keyid, token, message);
 
                         } else {
                             Toast.makeText(getApplicationContext(), "Post chat response code is not true", Toast.LENGTH_LONG).show();

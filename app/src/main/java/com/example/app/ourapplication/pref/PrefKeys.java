@@ -11,5 +11,7 @@ public class PrefKeys {
     public static String CHECK_IN = "check_in";
     public static String FCM_PREFERENCE = "fcm_pref";
     public static String FCM_TOKEN = "fcm_token";
+    public static String NOTIFIED_TIME = "notified_time";
+
 
 }

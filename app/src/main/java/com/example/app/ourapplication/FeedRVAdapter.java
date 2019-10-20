@@ -15,6 +15,7 @@ import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Handler;
 import android.support.design.widget.Snackbar;
+import android.support.v4.content.ContextCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -37,6 +38,7 @@ import android.widget.ImageView;
 import android.util.TypedValue;
 
 import com.example.app.ourapplication.pref.PreferenceEditor;
+import com.example.app.ourapplication.rest.ApiUrls;
 import com.example.app.ourapplication.rest.model.request.LocationModel;
 import com.example.app.ourapplication.rest.model.request.SubscribeReqModel;
 import com.example.app.ourapplication.rest.model.response.Person;
@@ -617,7 +619,12 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 vh5.senderMessage.setText(item.getMessage());
                 token=OurApplication.getUserToken();
                 vh5.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
+                if(item.getSubscriptionFlag().equals("SENT")){
 
+                    vh5.senderMessage.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_rectangle_grey));
+                }else{
+                    vh5.senderMessage.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_rectangle_blue));
+                }
                 Picasso_circle(item.getPhotoId(), vh5.senderPhoto);
 
                 break;
@@ -674,11 +681,16 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
     void Picasso_circle(String URL, ImageView imageView) {
-        Picasso.with(mContext).load(URL)
-                .transform(new CircleTransform())
-                .placeholder(R.drawable.mickey)
-                .error(R.drawable.mickey)
-                .into(imageView);
+
+        if (URL.isEmpty()){
+            URL = ApiUrls.HTTP_URL+"/images/"+PreferenceEditor.getInstance(mContext).getLoggedInUserName()+".jpg";
+        }
+            Picasso.with(mContext).load(URL)
+                    .transform(new CircleTransform())
+                    .placeholder(R.drawable.mickey)
+                    .error(R.drawable.mickey)
+                    .into(imageView);
+
     }
 
 

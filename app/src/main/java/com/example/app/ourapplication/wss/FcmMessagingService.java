@@ -132,7 +132,7 @@ public class FcmMessagingService extends FirebaseMessagingService  {
         super.onMessageReceived(remoteMessage);
 
         Map<String, String> message = remoteMessage.getData();
-        Log.d(TAG, "Message type received in FCM: "+remoteMessage.getData().get("type"));
+        Log.d(TAG, "Message type received in FCM: " + remoteMessage.getData().get("type"));
         if (remoteMessage.getData().get("type").trim().equals("F")){
             Person person = new Person(
                     remoteMessage.getData().get("type"),
@@ -150,7 +150,10 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             broadcaster.sendBroadcast(intent);
 
             mDBHelper.insertFeedData(person);
-            mNotificationActivity.Notifychatmessage(person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+            if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+                mNotificationActivity.NotifyFeed(person);
+            }
+
             //mDBHelper.getFeedDataColumn(person.getPostId(), 3)
 
         }else {
@@ -171,8 +174,12 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             intent.putExtra("person", person);
             Log.d(TAG, person.toString());
             broadcaster.sendBroadcast(intent);
+            if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+                mNotificationActivity.NotifyMessagingStyleNotification(getoldMessages(person), person,mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+            }
             mDBHelper.insertCommentData(person);
-            mNotificationActivity.Notifychatmessage(person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+          // mNotificationActivity.NotifyMessagingStyleNotification(person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+          //  mNotificationActivity.sendMessagingStyleNotification(person);
         }
 
         /*Bundle bundle = new Bundle;
@@ -202,7 +209,13 @@ public class FcmMessagingService extends FirebaseMessagingService  {
     }
 
 
+    @NonNull
+    private List<Person> getoldMessages(Person prsn){
 
+        List<Person> messages = mDBHelper.getCommentData(prsn.getPostId());  //add messagees from db here
+        //saveMessages(messages); //Not required - we have saved messages to db already
+        return messages;
+    }
 
 }
 

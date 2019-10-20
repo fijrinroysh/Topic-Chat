@@ -6,6 +6,15 @@
     android:orientation="vertical"
     >
 
+
+    <ProgressBar
+        android:id="@+id/video_loader_progress_bar"
+        style="?android:attr/progressBarStyleLarge"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:visibility="invisible" />
+
     <EditText
         android:id="@+id/msg_box"
         android:layout_width="match_parent"

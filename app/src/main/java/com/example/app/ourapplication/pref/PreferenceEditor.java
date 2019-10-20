@@ -74,4 +74,10 @@ public class PreferenceEditor {
         editor.putString(PrefKeys.FCM_TOKEN, token);
         editor.apply();
     }
+
+    public void setNotifiedTime(String time) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(PrefKeys.NOTIFIED_TIME, time);
+        editor.apply();
+    }
 }

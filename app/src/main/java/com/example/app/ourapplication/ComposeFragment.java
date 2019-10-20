@@ -76,6 +76,7 @@ public class ComposeFragment extends Fragment {
     private ImageView img;
     private EditText mMessageBox;
     FcmTokenService mFcmTokenService = new FcmTokenService(getContext());
+
     public String token;
     private Uri fileUri; // file url to store image/video
     private Uri filePath;
@@ -121,6 +122,9 @@ public class ComposeFragment extends Fragment {
         mMessageBox = (EditText) view.findViewById(R.id.msg_box);
 
         UI.showSoftKeyboard(getActivity(),mMessageBox);
+
+
+
        // img = (ImageView) view.findViewById(R.id.img);
         Button sendButton = (Button) view.findViewById(R.id.send_button);
         msg_send_lyt = (RelativeLayout) view.findViewById(R.id.msg_send_lyt);

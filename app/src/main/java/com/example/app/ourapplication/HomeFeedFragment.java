@@ -118,8 +118,7 @@ public class HomeFeedFragment extends Fragment {
         LinearLayoutManager llm = new LinearLayoutManager(getContext().getApplicationContext());
         recyclerView.setLayoutManager(llm);
         recyclerView.setAdapter(mFeedListAdapter);
-        mFeeds.clear();
-        mFeeds.addAll(mDBHelper.getFeedDataAll());
+
 
         mSwipeRefreshLayout = (SwipeRefreshLayout) view.findViewById(R.id.swiperefresh);
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
@@ -164,8 +163,9 @@ public class HomeFeedFragment extends Fragment {
     public void onPause() {
 
         LocalBroadcastManager.getInstance(getContext()).unregisterReceiver(mMessageReceiver);
+
         //mFeedListAdapter.onViewDetachedFromWindow(ViewHolder);
-        recyclerView.setAdapter(mFeedListAdapter);
+        //recyclerView.setAdapter(mFeedListAdapter);
         super.onPause();
     }
 
@@ -174,8 +174,12 @@ public class HomeFeedFragment extends Fragment {
 
         LocalBroadcastManager.getInstance(getContext()).registerReceiver(mMessageReceiver,
                 new IntentFilter("feedevent"));
-        recyclerView.setAdapter(mFeedListAdapter);
 
+
+        recyclerView.setAdapter(mFeedListAdapter);
+        mFeeds.clear();
+        mFeeds.addAll(mDBHelper.getFeedDataAll());
+        mFeedListAdapter.notifyDataSetChanged();
         super.onResume();
         //mFeedListAdapter.onViewDetachedFromWindow(ViewHolder);
 
@@ -253,7 +257,7 @@ public class HomeFeedFragment extends Fragment {
                         Toast.makeText(getActivity(), "No more feeds to load", Toast.LENGTH_LONG).show();
                     }
                 } else {
-                    Toast.makeText(getActivity(), "No feeds", Toast.LENGTH_LONG).show();
+                    Toast.makeText(getActivity(), "Null Response body", Toast.LENGTH_LONG).show();
                 }
 
             }
@@ -284,18 +288,19 @@ public class HomeFeedFragment extends Fragment {
             Log.d(TAG, "I am message type F");
 
             if (person.getType().equals("F")) {
-                Log.d(TAG, "I am message type F:");
-                Log.d(TAG, person.getPostId());
-                mFeeds.add(person);
-                mFeedListAdapter.notifyItemInserted(0);
-                recyclerView.scrollToPosition(0);
 
+                if (mFeeds.contains(person)) {
 
+                    Log.d(TAG, "I am message type F:");
+                    Log.d(TAG, person.getPostId());
+                    mFeeds.add(0, person);
+                    mFeedListAdapter.notifyItemInserted(0);
+                    recyclerView.scrollToPosition(0);
+
+                }
 
             }
-
         }
-
 
     };
 
