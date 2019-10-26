@@ -50,9 +50,11 @@
              />
         <activity
             android:name=".DiscussionActivity"
-
+            android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait"
             android:theme="@style/AppTheme.NoActionBar" />
+
+
 
         <service android:name=".FcmInstanceIdService">
             <intent-filter>

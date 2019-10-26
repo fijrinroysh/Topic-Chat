@@ -626,7 +626,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                     vh5.senderMessage.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_rectangle_blue));
                 }
                 Picasso_circle(item.getPhotoId(), vh5.senderPhoto);
-
+                Log.d(TAG, "Item in person view holder 5: " + item);
                 break;
 
         }
@@ -681,14 +681,17 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
 
     void Picasso_circle(String URL, ImageView imageView) {
-
+        String link;
         if (URL.isEmpty()){
-            URL = ApiUrls.HTTP_URL+"/images/"+PreferenceEditor.getInstance(mContext).getLoggedInUserName()+".jpg";
+            link = ApiUrls.HTTP_URL+"/images/"+PreferenceEditor.getInstance(mContext).getLoggedInUserName()+".jpg";
+            Log.d(TAG, "Profile image URL is empty - adding default URL: " + URL);
+        }else{
+            link=URL;
         }
-            Picasso.with(mContext).load(URL)
+            Picasso.with(mContext).load(link)
                     .transform(new CircleTransform())
-                    .placeholder(R.drawable.mickey)
-                    .error(R.drawable.mickey)
+                    .placeholder(R.drawable.circle)
+                    .error(R.drawable.circle)
                     .into(imageView);
 
     }

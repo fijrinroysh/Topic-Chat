@@ -105,4 +105,30 @@ public class Person extends Model implements Serializable {
     public void setSubscriptionFlag(String subscriptionflag) {
         this.mSubscriptionFlag = subscriptionflag;
     }
+
+
+    @Override
+    public boolean equals(Object other) {
+        if (!(other instanceof Person)) {
+            return false;
+        }
+
+        Person that = (Person) other;
+
+        // Custom equality check here.
+        return this.mType.equals(that.mType)
+                && this.mPostId.equals(that.mPostId)
+                && this.mUserId.equals(that.mUserId)
+                && this.mSenderName.equals(that.mSenderName)
+                && this.mMessage.equals(that.mMessage)
+                && this.mPhotoId.equals(that.mPhotoId)
+                && this.mPhotoMsg.equals(that.mPhotoMsg)
+                && this.mTimeMsg.equals(that.mTimeMsg)
+                && this.mSubscriptionFlag.equals(that.mSubscriptionFlag)
+
+                ;
+    }
+
+
+
 }

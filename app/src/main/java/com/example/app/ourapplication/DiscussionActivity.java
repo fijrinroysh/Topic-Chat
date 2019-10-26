@@ -122,6 +122,7 @@ public class DiscussionActivity extends AppCompatActivity  {
     TextView senderMsg;
 
     FcmTokenService mFcmTokenService = new FcmTokenService(this);
+    private final String userId = PreferenceEditor.getInstance(this).getLoggedInUserName();
 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,7 +136,7 @@ public class DiscussionActivity extends AppCompatActivity  {
         //mWebSocketClient = ((OurApplication)getApplicationContext()).getClient();
         //mWebSocketClient.addWebSocketListener(this);
         //token = ((OurApplication)getApplicationContext()).getUserToken();
-        UI.showSoftKeyboard(this,mMessageBox);
+        //UI.showSoftKeyboard(this,mMessageBox);
         token=mFcmTokenService.getGCMToken();
         recyclerView = (RecyclerView) findViewById(R.id.rv);
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -349,16 +350,23 @@ public class DiscussionActivity extends AppCompatActivity  {
                 Log.d(TAG, person.getPostId());
 
                 if (person.getPostId().equals(keyid)) {
-                    //person.setSubscriptionFlag("");
-                    //person.setSenderName("You");
-                    //person.setPhotoId("");
 
-                    Log.d(TAG, mComments.get(mComments.size() - 1).getMessage());
-                    Log.d(TAG, person.getMessage());
-                    if(mComments.get(mComments.size() - 1).getMessage().equals(person.getMessage())){
-                        mComments.set(mComments.size() - 1,person);
-                        mCommentListAdapter.notifyItemChanged(mComments.size() - 1);
+                    if (person.getUserId().equals(userId)) {
+                        int position = find_person(mComments, person);
+                        if( position != -1) {
+                            Log.d(TAG, "Message found in the Commentlist: " + mComments.get(find_person(mComments, person)).getMessage());
+                            //Log.d(TAG, person.getMessage());
+                            // if (mComments.get(mComments.size() - 1).getMessage().equals(person.getMessage())) {
+                            mComments.set(position, person);
+                            mCommentListAdapter.notifyItemChanged(position);
+                        }
+                    //}
+                    }
+                    else{
 
+                        mComments.add(person);
+                        recyclerView.scrollToPosition(mComments.size() - 1);
+                        mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
                     }
                 }
             }
@@ -368,6 +376,25 @@ public class DiscussionActivity extends AppCompatActivity  {
 
         };
 
+
+    public int find_person(List<Person> list, Person person ){
+        int p;
+
+        Person prsn = new Person(person.getType(),person.getPostId(),person.getUserId(),"You",person.getMessage(),"",person.getPhotoMsg(),person.getTimeMsg(),"SENT");
+
+
+        Log.d(TAG,"Message to find in recyclerview after receiving: " + prsn.toString());
+        if(list.contains(prsn)){
+            p = list.indexOf(prsn);
+            Log.d(TAG, "Position of the object found in mComments. Return position to replace");
+        }else {
+            p=-1;
+            Log.d(TAG, "Position of the object not found in mComments. Send default value");
+        }
+
+        return p;
+
+    }
 
 
 
@@ -394,6 +421,12 @@ public class DiscussionActivity extends AppCompatActivity  {
                     reqModel.getTime(),
                     "SENT"
             );
+
+            Log.d(TAG, "Message added to recyclerview before sending :" + prsn.toString());
+
+            mComments.add(prsn);
+            recyclerView.scrollToPosition(mComments.size() - 1);
+            mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
         /*Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());*/
 
             Call<SuccessRespModel> composeChat = ((OurApplication) getApplicationContext())
@@ -406,12 +439,10 @@ public class DiscussionActivity extends AppCompatActivity  {
                         //do something
                         if (response.body().isSuccess()) {
 
-                             Log.d(TAG, "Response body for post chat :" + response.body());
+                            Log.d(TAG, "Response body for post chat :" + response.body());
                             Toast.makeText(getApplicationContext(), "Chat Posted Successfully", Toast.LENGTH_LONG).show();
 
-                            mComments.add(prsn);
-                            recyclerView.scrollToPosition(mComments.size() - 1);
-                            mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
+
                             //msg = Helper.formCommentMessage("C", keyid, token, message);
 
                         } else {

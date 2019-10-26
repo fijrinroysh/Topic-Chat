@@ -64,14 +64,17 @@
                 android:layout_below="@+id/sender_name"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:layout_toLeftOf="@+id/message_time"
+                android:layout_margin="5dp"/>
 
 
             <RelativeLayout
                 android:id="@+id/relative_container"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_below="@+id/sender_photo"
+
+                android:layout_below="@+id/sender_message"
                 android:layout_margin="8dp">
 
 

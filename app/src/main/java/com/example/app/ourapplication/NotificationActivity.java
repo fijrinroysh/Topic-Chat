@@ -225,10 +225,7 @@ public class NotificationActivity {
                 .setGroup(person.getPostId())
                 .build();
 
-
-        notificationManager.notify(person.getPostId(), 0, notif);
-
-       /* Handler uiHandler = new Handler(Looper.getMainLooper());
+        Handler uiHandler = new Handler(Looper.getMainLooper());
         uiHandler.post(new Runnable(){
             @Override
             public void run() {
@@ -239,13 +236,15 @@ public class NotificationActivity {
                         .into(new Target() {
                             @Override
                             public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                                mBuilder.setLargeIcon(bitmap);
-                                notificationManager.notify(1, mBuilder.build());
+                                //mBuilder.setLargeIcon(bitmap);
+                               // notificationManager.notify(1, mBuilder.build());
+                                notificationManager.notify(person.getPostId(), 0, notif);
                             }
 
                             @Override
                             public void onBitmapFailed(Drawable errorDrawable) {
-                                notificationManager.notify(1, mBuilder.build());
+                                //notificationManager.notify(1, mBuilder.build());
+                                notificationManager.notify(person.getPostId(), 0, notif);
                             }
 
                             @Override
@@ -253,11 +252,11 @@ public class NotificationActivity {
                             }
                         });
             }
-        });*/
+        });
 
 
-        final RemoteViews contentView = notif.contentView;
-        final int iconId = R.drawable.mickey;
+       // final RemoteViews contentView = notif.contentView;
+       // final int iconId = R.drawable.mickey;
         // Use Picasso with RemoteViews to load image into a notification
 //        Picasso.with(mContext).load(person.getPhotoId()).into(contentView, 0, iconId, notif);
 

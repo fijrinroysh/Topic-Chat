@@ -147,12 +147,13 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             );
             Intent intent = new Intent("feedevent");
             intent.putExtra("person", person);
-            broadcaster.sendBroadcast(intent);
+            if(mDBHelper.insertFeedData(person)){
+                broadcaster.sendBroadcast(intent);
+                if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+                    mNotificationActivity.NotifyFeed(person);
+                }
+            } ;
 
-            mDBHelper.insertFeedData(person);
-            if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
-                mNotificationActivity.NotifyFeed(person);
-            }
 
             //mDBHelper.getFeedDataColumn(person.getPostId(), 3)
 
@@ -173,11 +174,14 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Intent intent = new Intent("chatevent");
             intent.putExtra("person", person);
             Log.d(TAG, person.toString());
-            broadcaster.sendBroadcast(intent);
-            if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
-                mNotificationActivity.NotifyMessagingStyleNotification(getoldMessages(person), person,mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+            if(mDBHelper.insertCommentData(person)){
+                broadcaster.sendBroadcast(intent);
+                if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+                    mNotificationActivity.NotifyMessagingStyleNotification(getoldMessages(person), person,mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+                }
             }
-            mDBHelper.insertCommentData(person);
+
+            ;
           // mNotificationActivity.NotifyMessagingStyleNotification(person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
           //  mNotificationActivity.sendMessagingStyleNotification(person);
         }

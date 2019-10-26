@@ -249,8 +249,8 @@ public class HomeFeedFragment extends Fragment {
                         for (int i = 0; i < data.size(); i++) {
                            // mDBHelper.insertFeedData(data.get(i));
                            // Log.d(TAG, "insertFeedData :" + data.get(i));
-                            mFeeds.add(0, data.get(i));
-                            mFeedListAdapter.notifyItemInserted(0);
+                            //mFeeds.add(0, data.get(i));
+                            //mFeedListAdapter.notifyItemInserted(0);
                         }
                         Toast.makeText(getActivity(), "New feeds", Toast.LENGTH_LONG).show();
                     } else {
@@ -288,10 +288,10 @@ public class HomeFeedFragment extends Fragment {
             Log.d(TAG, "I am message type F");
 
             if (person.getType().equals("F")) {
+                int position = find_person(mFeeds,person);
 
-                if (mFeeds.contains(person)) {
+                if (position == -1 ) {
 
-                    Log.d(TAG, "I am message type F:");
                     Log.d(TAG, person.getPostId());
                     mFeeds.add(0, person);
                     mFeedListAdapter.notifyItemInserted(0);
@@ -303,6 +303,26 @@ public class HomeFeedFragment extends Fragment {
         }
 
     };
+
+
+    public int find_person(List<Person> list, Person person ){
+        int p;
+
+        Person prsn = new Person(person.getType(),person.getPostId(),person.getUserId(),person.getSenderName(),person.getMessage(),person.getPhotoId(),person.getPhotoMsg(),person.getTimeMsg(),person.getSubscriptionFlag());
+
+
+        Log.d(TAG,"Check if this person is in the list: " + prsn.toString());
+        if(list.contains(prsn)){
+            p = list.indexOf(prsn);
+            Log.d(TAG, "Position of the person found in list. Return position to replace");
+        }else {
+            p=-1;
+            Log.d(TAG, "Position of the person not found in list. Send default value");
+        }
+
+        return p;
+
+    }
 
 /*    private void getSubscribers(){
 

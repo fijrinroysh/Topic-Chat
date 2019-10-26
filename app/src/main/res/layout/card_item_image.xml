@@ -62,7 +62,9 @@
                 android:layout_below="@+id/sender_name"
                 android:textSize="14sp"
                 android:textStyle="bold"
-                android:textColor="@color/text_color" />
+                android:textColor="@color/text_color"
+                android:layout_toLeftOf="@+id/message_time"
+                android:layout_margin="5dp"/>
 
 
             <ImageView
@@ -70,7 +72,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="200dp"
                 android:adjustViewBounds="false"
-                android:layout_below="@+id/sender_photo"
+                android:layout_below="@+id/sender_message"
                 android:layout_margin="1dp"
                 android:scaleType="centerCrop"
                 />
