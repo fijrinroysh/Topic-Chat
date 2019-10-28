@@ -149,8 +149,11 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             intent.putExtra("person", person);
             if(mDBHelper.insertFeedData(person)){
                 broadcaster.sendBroadcast(intent);
+                Log.d(TAG, "Feed Message broadcasted: " + remoteMessage.getData().get("message"));
                 if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+
                     mNotificationActivity.NotifyFeed(person);
+                    Log.d(TAG, "Feed Message notified: " + remoteMessage.getData().get("message"));
                 }
             } ;
 
@@ -174,11 +177,14 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Intent intent = new Intent("chatevent");
             intent.putExtra("person", person);
             Log.d(TAG, person.toString());
+            List<Person> oldmessages = getoldMessages(person);
             if(mDBHelper.insertCommentData(person)){
                 broadcaster.sendBroadcast(intent);
+                Log.d(TAG, "Chat Message broadcasted: " + remoteMessage.getData().get("message"));
                 if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
-                    mNotificationActivity.NotifyMessagingStyleNotification(getoldMessages(person), person,mDBHelper.getFeedDataColumn(person.getPostId(), 3));
-                }
+                    mNotificationActivity.NotifyMessagingStyleNotification(oldmessages, person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+                    Log.d(TAG, "Chat Message notified: " + remoteMessage.getData().get("message"));
+                    }
             }
 
             ;

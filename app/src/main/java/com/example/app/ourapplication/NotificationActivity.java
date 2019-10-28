@@ -1,13 +1,16 @@
 package com.example.app.ourapplication;
 
 import android.app.Notification;
+import android.app.NotificationChannel;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.graphics.drawable.Drawable;
+import android.os.Build;
 import android.os.Handler;
 import android.os.Looper;
 import android.os.Message;
@@ -200,7 +203,7 @@ public class NotificationActivity {
 
     public void NotifyFeed(final Person person) {
 
-
+        final String NOTIFICATION_CHANNEL_ID = person.getPostId();
         int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
 
         Log.d(TAG, "Notif id is:  " + notifid);
@@ -214,13 +217,27 @@ public class NotificationActivity {
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext,notifid , notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 
-        final Notification notif = new NotificationCompat.Builder(mContext)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+
+            // Configure the notification channel.
+            notificationChannel.setDescription("Channel description");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
+
+
+        final Notification notif = new Notification.Builder(mContext,NOTIFICATION_CHANNEL_ID)
                 .setAutoCancel(true)
                 .setContentTitle(person.getMessage())
-                .setContentText("New Topic by "+person.getSenderName())
+                .setContentText("New Topic by " + person.getSenderName())
                 .setSmallIcon(R.mipmap.app_icon)
                 .setLargeIcon(BitmapFactory.decodeResource(mContext.getResources(), R.drawable.mickey))
-                .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
+
                 .setContentIntent(pendingIntent)
                 .setGroup(person.getPostId())
                 .build();
@@ -319,22 +336,32 @@ public class NotificationActivity {
 
 
     public void NotifyMessagingStyleNotification(List<Person> persons, Person person, String title) {
-
+          final String NOTIFICATION_CHANNEL_ID = person.getPostId();
 
         int notifid = (int) ((new Date().getTime() / 1000L) % Integer.MAX_VALUE);
 
         Log.d(TAG, "Notif id is:  " + notifid);
         final NotificationManager notificationManager = (NotificationManager) mContext.getSystemService(Context.NOTIFICATION_SERVICE);
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            NotificationChannel notificationChannel = new NotificationChannel(NOTIFICATION_CHANNEL_ID, "My Notifications", NotificationManager.IMPORTANCE_DEFAULT);
+
+            // Configure the notification channel.
+            notificationChannel.setDescription("Channel description");
+            notificationChannel.enableLights(true);
+            notificationChannel.setLightColor(Color.RED);
+            notificationChannel.setVibrationPattern(new long[]{0, 1000, 500, 1000});
+            notificationChannel.enableVibration(true);
+            notificationManager.createNotificationChannel(notificationChannel);
+        }
 
         Intent notificationIntent = new Intent(mContext, DiscussionActivity.class);
         notificationIntent.putExtra("person", person);
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext, notifid, notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
-                NotificationCompat.MessagingStyle messagingStyle = buildMessageList(persons, person,title);
-                Notification notification = new NotificationCompat.Builder(mContext)
+                Notification.MessagingStyle messagingStyle = buildMessageList(persons, person,title);
+                Notification notification = new Notification.Builder(mContext,NOTIFICATION_CHANNEL_ID)
                         .setStyle(messagingStyle)
-                        .setSound(Settings.System.DEFAULT_NOTIFICATION_URI)
                         .setContentIntent(pendingIntent)
                         .setAutoCancel(true)
                         .setSmallIcon(R.mipmap.app_icon)
@@ -343,22 +370,22 @@ public class NotificationActivity {
                 notificationManager.notify(person.getPostId(), 1, notification);
             }
 
-            private NotificationCompat.MessagingStyle buildMessageList(List<Person> persons, Person prsn , String topic) {
+            private Notification.MessagingStyle buildMessageList(List<Person> persons, Person prsn , String topic) {
 
 
 
                 final String MY_DISPLAY_NAME = "Me";
-                NotificationCompat.MessagingStyle messagingStyle =
-                        new NotificationCompat.MessagingStyle(MY_DISPLAY_NAME)
+                Notification.MessagingStyle messagingStyle =
+                        new Notification.MessagingStyle(MY_DISPLAY_NAME)
                                 .setConversationTitle(topic);
 
                 for (Person person : persons) {
                    // String sender = message.sender().equals(MY_DISPLAY_NAME) ? null : message.sender();
                     //long msgtime = Helper.convertoTimeStamp(person.getTimeMsg());
-                    messagingStyle.addMessage(new NotificationCompat.MessagingStyle.Message(person.getMessage(), get_msgtime(person), person.getSenderName()));
+                    messagingStyle.addMessage(new Notification.MessagingStyle.Message(person.getMessage(), get_msgtime(person), person.getSenderName()));
 
                 }
-                messagingStyle.addMessage(new NotificationCompat.MessagingStyle.Message(prsn.getMessage(), get_msgtime(prsn), prsn.getSenderName()));
+                messagingStyle.addMessage(new Notification.MessagingStyle.Message(prsn.getMessage(), get_msgtime(prsn), prsn.getSenderName()));
                 return messagingStyle;
             }
 

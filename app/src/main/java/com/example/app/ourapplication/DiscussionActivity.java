@@ -345,8 +345,6 @@ public class DiscussionActivity extends AppCompatActivity  {
 
 
 
-            if (person.getType().equals("C")) {
-                Log.d(TAG, "I am message type C:");
                 Log.d(TAG, person.getPostId());
 
                 if (person.getPostId().equals(keyid)) {
@@ -369,7 +367,7 @@ public class DiscussionActivity extends AppCompatActivity  {
                         mCommentListAdapter.notifyItemInserted(mComments.size() - 1);
                     }
                 }
-            }
+
 
             }
 

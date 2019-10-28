@@ -287,9 +287,9 @@ public class HomeFeedFragment extends Fragment {
 
             Person person = (Person) intent.getSerializableExtra("person");
 
-            Log.d(TAG, "I am message type F");
 
-            if (person.getType().equals("F")) {
+
+
                 int position = find_person(mFeeds,person);
 
                 if (position == -1 ) {
@@ -301,7 +301,7 @@ public class HomeFeedFragment extends Fragment {
 
                 }
 
-            }
+
         }
 
     };
