@@ -35,6 +35,7 @@ import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.MediaController;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 import android.widget.VideoView;
@@ -89,6 +90,7 @@ public class ComposeFragment extends Fragment {
    // private Uri fileUri; // file url to store image/video
     //RestApi service;
     private static ProgressDialog pDialog;
+    public ProgressBar progressbar;
     private ImageView iv ;
     private VideoView vv ;
     private RelativeLayout msg_send_lyt;
@@ -130,8 +132,8 @@ public class ComposeFragment extends Fragment {
         msg_send_lyt = (RelativeLayout) view.findViewById(R.id.msg_send_lyt);
         ImageButton cameraButton = (ImageButton) view.findViewById(R.id.camera_button);
         ImageButton galleryButton = (ImageButton) view.findViewById(R.id.gallery);
-/*
-        if(img.getDrawable() == null) {
+         progressbar = (ProgressBar) view.findViewById(R.id.video_loader_progress_bar);
+/*        if(img.getDrawable() == null) {
             RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT,
                     RelativeLayout.LayoutParams.WRAP_CONTENT);
             params.addRule(RelativeLayout.SOFT_INPUT_ADJUST_PAN);
@@ -141,6 +143,8 @@ public class ComposeFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                progressbar.setVisibility(View.VISIBLE);
+
                 String msg = mMessageBox.getText().toString();
                 if (!TextUtils.isEmpty(msg)) {
                     token = mFcmTokenService.getGCMToken();
