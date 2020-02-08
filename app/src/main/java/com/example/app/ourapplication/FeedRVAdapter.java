@@ -237,8 +237,9 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 return 3;
             }
             else {return 1;}
-        }else if (mFeeds.get(i).getType().equals("C") && mFeeds.get(i).getUserId().equals(userId)  )
+        }else if (mFeeds.get(i).getType().equals("C") && mFeeds.get(i).getUserId().equals(userId))
         {
+            Log.d(TAG, "Comment Feed from same User? "+ mFeeds.get(i).getUserId() + userId);
             return 5;
         }else if(mFeeds.get(i).getType().equals("C")){
             return 4;
@@ -289,7 +290,7 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
                 vh1.senderMessage.setText(item.getMessage());
                 vh1.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
                 // Picasso.with(mContext).load(item.getPhotoId()).resize(50, 50).into(vh1.senderPhoto);
-                Log.d(TAG, "SUBSCRIPTION :" + item.getSubscriptionFlag());
+                Log.d(TAG, "SUBSCRIPTION :" + item.getFlag());
                 Log.d(TAG, "sender name :" + item.getUserId());
                 Log.d(TAG, "userid :" + userId);
                 token=OurApplication.getUserToken();
@@ -615,11 +616,17 @@ public class FeedRVAdapter extends RecyclerView.Adapter<RecyclerView.ViewHolder>
 
             case 5:
                 final PersonViewHolder5 vh5 = (PersonViewHolder5) viewHolder;
-                vh5.senderName.setText(item.getSenderName());
+                if(item.getSenderName().length()<10){
+                    vh5.senderName.setText(item.getSenderName());
+                } else {
+                    vh5.senderName.setText("You");
+                }
+
+
                 vh5.senderMessage.setText(item.getMessage());
                 token=OurApplication.getUserToken();
                 vh5.messageTime.setText(Helper.getRelativeTime(item.getTimeMsg()));
-                if(item.getSubscriptionFlag().equals("SENT")){
+                if(item.getFlag().equals("REQ")){
 
                     vh5.senderMessage.setBackground(ContextCompat.getDrawable(mContext, R.drawable.rounded_rectangle_grey));
                 }else{

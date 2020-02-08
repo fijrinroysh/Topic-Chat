@@ -137,7 +137,9 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Person person = new Person(
                     remoteMessage.getData().get("type"),
                     remoteMessage.getData().get("postid"),
+                    "",
                     remoteMessage.getData().get("userid"),
+                    "",
                     remoteMessage.getData().get("name"),
                     remoteMessage.getData().get("message"),
                     remoteMessage.getData().get("profileimage"),
@@ -148,13 +150,18 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Intent intent = new Intent("feedevent");
             intent.putExtra("person", person);
             if(mDBHelper.insertFeedData(person)){
-                broadcaster.sendBroadcast(intent);
-                Log.d(TAG, "Feed Message broadcasted: " + remoteMessage.getData().get("message"));
-                if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+                if(broadcaster.sendBroadcast(intent)){
 
-                    mNotificationActivity.NotifyFeed(person);
-                    Log.d(TAG, "Feed Message notified: " + remoteMessage.getData().get("message"));
+                    Log.d(TAG, "Feed Message broadcasted: " + remoteMessage.getData().get("message"));
+                } else{
+
+                    if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
+
+                        mNotificationActivity.NotifyFeed(person);
+                        Log.d(TAG, "Feed Message notified: " + remoteMessage.getData().get("message"));
+                    }
                 }
+
             } ;
 
 
@@ -164,7 +171,9 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Person person = new Person(
                     remoteMessage.getData().get("type"),
                     remoteMessage.getData().get("postid"),
+                    "",
                     remoteMessage.getData().get("userid"),
+                    "",
                     remoteMessage.getData().get("name"),
                     remoteMessage.getData().get("message"),
                     remoteMessage.getData().get("profileimage"),
@@ -179,12 +188,16 @@ public class FcmMessagingService extends FirebaseMessagingService  {
             Log.d(TAG, person.toString());
             List<Person> oldmessages = getoldMessages(person);
             if(mDBHelper.insertCommentData(person)){
-                broadcaster.sendBroadcast(intent);
-                Log.d(TAG, "Chat Message broadcasted: " + remoteMessage.getData().get("message"));
-                if(!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())){
-                    mNotificationActivity.NotifyMessagingStyleNotification(oldmessages, person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
-                    Log.d(TAG, "Chat Message notified: " + remoteMessage.getData().get("message"));
+                if(broadcaster.sendBroadcast(intent)) {
+
+                    Log.d(TAG, "Chat Message broadcasted: " + remoteMessage.getData().get("message"));
+                }
+                else {
+                    if (!remoteMessage.getData().get("userid").equals(PreferenceEditor.getInstance(this).getLoggedInUserName())) {
+                        mNotificationActivity.NotifyMessagingStyleNotification(oldmessages, person, mDBHelper.getFeedDataColumn(person.getPostId(), 3));
+                        Log.d(TAG, "Chat Message notified: " + remoteMessage.getData().get("message"));
                     }
+                }
             }
 
             ;

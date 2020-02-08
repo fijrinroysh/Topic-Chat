@@ -30,17 +30,64 @@ public class PreferenceEditor {
     public PreferenceEditor(Context context){
         mSharedPrefs = context.getSharedPreferences(PrefKeys.SHARED_PREF_NAME, Context.MODE_PRIVATE);
     }
+
+
     public String getGCMToken() {
         return mSharedPrefs.getString(PrefKeys.FCM_TOKEN, null);
     }
 
+
+
+    public void setGCMToken(String token) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(PrefKeys.FCM_TOKEN, token);
+        editor.apply();
+    }
+
+
+
+
     public String getLoggedInUserName() {
         return mSharedPrefs.getString(PrefKeys.LOGGED_IN_USER_NAME, null);
     }
-
     public String getLoggedInPassword() {
         return mSharedPrefs.getString(PrefKeys.LOGGED_IN_PASSWORD, null);
     }
+
+    public void setLoggedInUserName(String loginId,String password) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(PrefKeys.LOGGED_IN_USER_NAME, loginId);
+        editor.putString(PrefKeys.LOGGED_IN_PASSWORD, password);
+        editor.apply();
+    }
+
+
+
+
+    public String getLoggedInNickName() {
+        return mSharedPrefs.getString(PrefKeys.LOGGED_IN_NICK_NAME, null);
+    }
+
+    public void setLoggedInNickName(String nickname) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(PrefKeys.LOGGED_IN_NICK_NAME, nickname);
+        editor.apply();
+    }
+
+
+
+
+    public String getLoggedInUserImage() {
+        return mSharedPrefs.getString(PrefKeys.LOGGED_IN_USER_IMAGE, null);
+    }
+
+    public void setLoggedInUserImage(String profileImage) {
+        SharedPreferences.Editor editor = mSharedPrefs.edit();
+        editor.putString(PrefKeys.LOGGED_IN_USER_IMAGE, profileImage);
+        editor.apply();
+    }
+
+
 
     public LocationModel getLocation() {
         ObjectMapper mapper = new ObjectMapper();
@@ -61,23 +108,18 @@ public class PreferenceEditor {
         editor.apply();
     }
 
-    public void setLoggedInUserName(String loginId,String password) {
-        SharedPreferences.Editor editor = mSharedPrefs.edit();
-        editor.putString(PrefKeys.LOGGED_IN_USER_NAME, loginId);
-        editor.putString(PrefKeys.LOGGED_IN_PASSWORD, password);
-        editor.apply();
-    }
 
 
-    public void setGCMToken(String token) {
-        SharedPreferences.Editor editor = mSharedPrefs.edit();
-        editor.putString(PrefKeys.FCM_TOKEN, token);
-        editor.apply();
-    }
+
+
+
 
     public void setNotifiedTime(String time) {
         SharedPreferences.Editor editor = mSharedPrefs.edit();
         editor.putString(PrefKeys.NOTIFIED_TIME, time);
         editor.apply();
     }
+
+
+
 }

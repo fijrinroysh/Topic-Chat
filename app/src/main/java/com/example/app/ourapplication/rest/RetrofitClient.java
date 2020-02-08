@@ -1,5 +1,7 @@
 package com.example.app.ourapplication.rest;
 
+import java.util.concurrent.TimeUnit;
+
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.SSLSession;
 
@@ -26,6 +28,7 @@ public class RetrofitClient {
         HttpLoggingInterceptor logging = new HttpLoggingInterceptor();
         logging.setLevel(HttpLoggingInterceptor.Level.BODY);
         clientBldr.addInterceptor(logging);
+        clientBldr.writeTimeout(30, TimeUnit.SECONDS);
         mRetrofit = new Retrofit.Builder()
                 .baseUrl(ApiUrls.HTTP_URL)
                 .addConverterFactory(JacksonConverterFactory.create())

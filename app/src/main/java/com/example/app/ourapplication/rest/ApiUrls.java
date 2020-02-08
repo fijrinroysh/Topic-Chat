@@ -9,6 +9,6 @@ public interface ApiUrls {
     ///String WS_URL = "ws://ec2-54-254-164-222.ap-southeast-1.compute.amazonaws.com:8080";
 //    public final static String WS_URL = "ws://ec2-52-77-242-215.ap-southeast-1.compute.amazonaws.com:8080";
 
-    String HTTP_URL = " http://ec2-35-154-153-33.ap-south-1.compute.amazonaws.com";
-    String WS_URL = " http://ec2-35-154-153-33.ap-south-1.compute.amazonaws.com:80/notify";
+    String HTTP_URL = "http://ec2-13-233-167-80.ap-south-1.compute.amazonaws.com";
+    //String WS_URL = " http://ec2-13-233-167-80.ap-south-1.compute.amazonaws.com:80/notify";
 }

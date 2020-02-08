@@ -9,6 +9,7 @@ import com.example.app.ourapplication.rest.model.request.TokenReqModel;
 import com.example.app.ourapplication.rest.model.response.CompleteFeedModel;
 import com.example.app.ourapplication.rest.model.response.ComposeRespModel;
 import com.example.app.ourapplication.rest.model.response.GetDataRespModel;
+import com.example.app.ourapplication.rest.model.response.Person;
 import com.example.app.ourapplication.rest.model.response.ProfileRespModel;
 import com.example.app.ourapplication.rest.model.response.SignInRespModel;
 import com.example.app.ourapplication.rest.model.request.SignUpReqModel;
@@ -51,7 +52,7 @@ public interface RestApi {
     Call<SuccessRespModel> UpdateToken(@Body TokenReqModel tokenReqModel);
 
     @POST("/postchat")
-    Call<SuccessRespModel> ComposeChat(@Body ChatPostReqModel chatPostReqModel);
+    Call<SuccessRespModel> ComposeChat(@Body Person person);
 
     @POST("/subscriber/subscribe")
     Call<SuccessRespModel> SubscribeFeed(@Body SubscribeReqModel subscribereqmodel);

@@ -110,9 +110,9 @@ public class ProfileFragment extends Fragment {
     public void onViewCreated(View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        String userId = PreferenceEditor.getInstance(getContext().getApplicationContext()).getLoggedInUserName();
-        String ImageURL = ApiUrls.HTTP_URL +"/file_download/Pictures/"+userId+".jpg";
-        //mFeeds = mDBHelper.getFeedDataAll();
+
+
+
 
         mFeedListAdapter = new FeedRVAdapter(getActivity(),mFeeds);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
@@ -121,7 +121,7 @@ public class ProfileFragment extends Fragment {
         recyclerView.setAdapter(mFeedListAdapter);
 
         mUserId = PreferenceEditor.getInstance((getActivity().getApplicationContext())).getLoggedInUserName();
-
+        String ImageURL = ApiUrls.HTTP_URL +"/images/"+mUserId+".jpg";
         Log.d(TAG, "User ID is" + mUserId);
 
         Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_profile);
@@ -150,7 +150,7 @@ public class ProfileFragment extends Fragment {
 
 
 
-        getUpdatedFeeds();
+        //getUpdatedFeeds();
     }
 
 
@@ -166,9 +166,13 @@ public class ProfileFragment extends Fragment {
 
     @Override
     public void onResume() {
-        super.onResume();
+
         recyclerView.setAdapter(mFeedListAdapter);
-    }
+        mFeeds.clear();
+        mFeeds.addAll(mDBHelper.getFeedDataUser(mUserId));
+        mFeedListAdapter.notifyDataSetChanged();
+        super.onResume();
+            }
 
 
     private void showFileChooser() {
@@ -206,11 +210,11 @@ public class ProfileFragment extends Fragment {
 
                             if(!TextUtils.isEmpty(mUserId)) {
                                 String imageProfileString = Helper.getStringImage(bitmapRef);
-                               // Log.d(TAG, "Image message value length : " + imageProfileString.length());
-                               // Log.d(TAG, "Image message value is : " + imageProfileString);
+                                // Log.d(TAG, "Image message value length : " + imageProfileString.length());
+                                // Log.d(TAG, "Image message value is : " + imageProfileString);
                                 ProfileUpdateModel model = new ProfileUpdateModel(mUserId, Keys.KEY_PROFIMG, imageProfileString);
                                 updateProfile(model);
-                             //   mDBHelper.updateProfile(model.toString());
+                                //   mDBHelper.updateProfile(model.toString());
                             }
                         }else{
                             Snackbar.make(profileImgView, "Bitmap is null", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -322,26 +326,37 @@ public class ProfileFragment extends Fragment {
     }
 
 
-    private void getUpdatedFeeds(){
-        ProfileFeedReqModel reqModel = new ProfileFeedReqModel(mUserId,"2020-12-31 12:00:00");
+   /* private void getUpdatedFeeds(){
+        ProfileFeedReqModel reqModel = new ProfileFeedReqModel(mUserId,"1900-12-31 12:00:00");
 
         Call<GetDataRespModel> queryProfileFeeds = ((OurApplication)getActivity().getApplicationContext())
                 .getRestApi().queryProfileFeed(reqModel);
         queryProfileFeeds.enqueue(new Callback<GetDataRespModel>() {
             @Override
             public void onResponse(Call<GetDataRespModel> call,Response<GetDataRespModel> response) {
-                if (response.body().isSuccess()) {
-                    ArrayList<Person> data = response.body().getData();
+                if (response.body() != null) {
+                    //do something
 
-                    if(data.size() > 0) {
-                        for (int i = 0; i < data.size(); i++) {
+                    if (response.body().isSuccess()) {
+                        ArrayList<Person> data = response.body().getData();
+
+                        if(data.size() > 0) {
+                            for (int i = 0; i < data.size(); i++) {
 
                             mFeeds.add(0, data.get(i));
                             mFeedListAdapter.notifyDataSetChanged();
+                            }
                         }
+
+                    Toast.makeText(getActivity(), "Feeds Loaded", Toast.LENGTH_LONG).show();
+                    }
+                    else
+                    {
+                    Toast.makeText(getActivity(), "Response code is not true", Toast.LENGTH_LONG).show();
                     }
 
-                    Toast.makeText(getActivity(), "No more Feeds to Load", Toast.LENGTH_LONG).show();
+                } else {
+                    Toast.makeText(getActivity(), "Response body is null", Toast.LENGTH_LONG).show();
                 }
             }
 
@@ -351,7 +366,7 @@ public class ProfileFragment extends Fragment {
                 Toast.makeText(getActivity(), "Loading Feeds Failed", Toast.LENGTH_LONG).show();
             }
         });
-    }
+    }*/
 
     // TODO: Rename method, update argument and hook method into UI event
     public void onButtonPressed(Uri uri) {

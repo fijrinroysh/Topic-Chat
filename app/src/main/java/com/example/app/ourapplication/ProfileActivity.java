@@ -71,7 +71,7 @@ public class ProfileActivity extends AppCompatActivity{
 
 
                 // String sid=mDBHelper.getUserSubscription(mUserId, userid);
-        String sid= person.getSubscriptionFlag();
+        String sid= person.getFlag();
         Log.d(TAG, "S ID : " + sid);
 
         if(sid!=null && sid.equals("nosubscription")) {fabsubscribe.setVisibility(View.VISIBLE);

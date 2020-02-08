@@ -52,6 +52,7 @@
             android:name=".DiscussionActivity"
             android:windowSoftInputMode="stateHidden|adjustResize"
             android:screenOrientation="portrait"
+            android:launchMode="singleTop"
             />
 
 

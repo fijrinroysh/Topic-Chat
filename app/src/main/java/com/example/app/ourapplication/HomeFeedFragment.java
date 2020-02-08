@@ -113,8 +113,8 @@ public class HomeFeedFragment extends Fragment {
        // mFeeds = mDBHelper.getFeedDataAll();
 
         mFeedListAdapter = new FeedRVAdapter(getContext(),mFeeds);
-        Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_homefeed);
-        ((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
+        //Toolbar toolbar = (Toolbar) view.findViewById(R.id.toolbar_homefeed);
+        //((AppCompatActivity)getActivity()).setSupportActionBar(toolbar);
         recyclerView = (RecyclerView) view.findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(getContext().getApplicationContext());
@@ -233,8 +233,12 @@ public class HomeFeedFragment extends Fragment {
 
 
     private void getUpdatedFeeds(){
-        HomeFeedReqModel reqModel = new HomeFeedReqModel("F","5",location.getLongitude(),
-                location.getLatitude(),mDBHelper.getFeedDataLatestTime(),PreferenceEditor.getInstance(getContext()).getLoggedInUserName());
+        HomeFeedReqModel reqModel = new HomeFeedReqModel("F","5",
+                location.getLongitude(),
+                location.getLatitude(),
+                mDBHelper.getFeedDataLatestTime(),
+                PreferenceEditor.getInstance(getContext()).
+                getLoggedInUserName());
 
         //Log.d(TAG, "Latest date :" + mDBHelper.getFeedDataLatestTime());
 
@@ -310,7 +314,17 @@ public class HomeFeedFragment extends Fragment {
     public int find_person(List<Person> list, Person person ){
         int p;
 
-        Person prsn = new Person(person.getType(),person.getPostId(),person.getUserId(),person.getSenderName(),person.getMessage(),person.getPhotoId(),person.getPhotoMsg(),person.getTimeMsg(),person.getSubscriptionFlag());
+        Person prsn = new Person(person.getType(),
+                person.getPostId(),
+                "",
+                person.getUserId(),
+                "",
+                person.getSenderName(),
+                person.getMessage(),
+                person.getPhotoId(),
+                person.getPhotoMsg(),
+                person.getTimeMsg(),
+                person.getFlag());
 
 
         Log.d(TAG,"Check if this person is in the list: " + prsn.toString());

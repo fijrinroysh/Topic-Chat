@@ -14,7 +14,7 @@ import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-import static com.example.app.ourapplication.rest.ApiUrls.WS_URL;
+
 
 /**
  * Created by sarumugam on 15/01/17.

@@ -214,6 +214,7 @@ public class NotificationActivity {
         notificationIntent.putExtra("person", person);
         notificationIntent.setAction(Intent.ACTION_MAIN);
         notificationIntent.addCategory(Intent.CATEGORY_LAUNCHER);
+//        notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
         PendingIntent pendingIntent = PendingIntent.getActivity(mContext,notifid , notificationIntent, PendingIntent.FLAG_CANCEL_CURRENT);
 
 
